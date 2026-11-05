@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARBEARIA NOBELL | Estilo, Precisão & Agendamento Online</title>
+    <meta name="description" content="Conheça a BARBEARIA NOBELL. Agende seu horário de forma rápida pelo WhatsApp. Atendimento premium em Tv. Otávio Santos, 59 - Recreio, Vitória da Conquista - BA, 45020-760.">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#D4AF37',
+                        goldHover: '#B8972E',
+                        darkBg: '#0C0D0E',
+                        darkCard: '#151719',
+                        darkBorder: '#23262A'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Cinzel', 'Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass-header {
+            background: rgba(12, 13, 14, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        @keyframes pulse-gold {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 0 20px 4px rgba(212, 175, 55, 0.25); }
+        }
+        .pulse-gold-btn {
+            animation: pulse-gold 3s infinite;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-200 font-sans antialiased selection:bg-gold selection:text-black pb-14">
+
+    <!-- BARRA DEMO DE PROPOSTA COMERCIAL (Fixa no topo) -->
+    <div class="bg-gradient-to-r from-amber-700 via-gold to-amber-600 text-black text-xs sm:text-sm py-2 px-4 text-center font-bold shadow-md flex items-center justify-center gap-2">
+        <i data-lucide="scissors" class="w-4 h-4"></i>
+        <span>Demonstração exclusiva criada para <strong>BARBEARIA NOBELL</strong></span>
+        <span class="hidden md:inline">| Gostaria de colocar este site no ar com seu próprio domínio (.com.br)?</span>
+        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Vi%20a%20demonstra%C3%A7%C3%A3o%20do%20site%20da%20barbearia%20e%20gostei,%20como%20funciona?" target="_blank" class="underline ml-2 bg-black/20 hover:bg-black/40 text-black px-2.5 py-0.5 rounded-full transition">Falar agora</a>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-40 glass-header border-b border-darkBorder transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-amber-700 flex items-center justify-center text-black shadow-lg shadow-gold/20 group-hover:scale-105 transition">
+                    <i data-lucide="scissors" class="w-5 h-5"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-heading font-bold text-base sm:text-lg text-white tracking-wider uppercase">BARBEARIA NOBELL</span>
+                    <span class="text-xs text-gold font-medium flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 fill-gold"></i>
+                        5,0 no Google (6 avaliações)
+                    </span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="#servicos" class="hover:text-gold transition">Serviços</a>
+                <a href="#experiencia" class="hover:text-gold transition">Diferenciais</a>
+                <a href="#avaliacoes" class="hover:text-gold transition">Avaliações</a>
+                <a href="#localizacao" class="hover:text-gold transition">Como Chegar</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio" target="_blank" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold px-4 sm:px-5 py-2.5 rounded-full shadow-lg shadow-emerald-950/40 flex items-center gap-2 text-sm transition hover:scale-105">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span>Agendar Horário</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-[580px] flex items-center justify-center overflow-hidden py-16 sm:py-24">
+        <!-- Background Imagem -->
+        <div class="absolute inset-0 z-0">
+            
+            <img src="https://lh3.googleusercontent.com/grass-cs/AABkmLeKejqZCM-jHRzXDaCyGMzbpz56IUj53x9UQAXKaUo3doCcEzdrcinOXawXXe9W_gb9Mem0p3kX3nKaZaKXFRQ8OdeKk1s24HkMQu_jWjxAkFKqvKsBgkC8rr9dwHLmjp_Q5ULOQUfX1d4W=w1200-h800-k-no" alt="BARBEARIA NOBELL" class="w-full h-full object-cover object-center brightness-40 contrast-125 scale-105">
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-darkBg via-darkBg/80 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-darkBg/95 via-darkBg/70 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+            <!-- Badge de Nota Google Maps -->
+            <div class="inline-flex items-center gap-2 bg-darkCard/80 backdrop-blur-md border border-gold/30 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-gold mb-6 shadow-xl">
+                <span class="flex items-center text-gold">
+                    <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                </span>
+                <span class="text-white">5,0 Estrelas</span>
+                <span class="text-gray-400">| 6 avaliações de clientes reais</span>
+            </div>
+
+            <!-- Título Principal -->
+            <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-wider uppercase mb-6 max-w-4xl mx-auto leading-tight">
+                Mais que um corte, uma experiência em <span class="bg-gradient-to-r from-gold via-amber-200 to-amber-500 bg-clip-text text-transparent">BARBEARIA NOBELL</span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                Cortes clássicos e modernos, barba terapia com toalha quente e atendimento personalizado. Garanta seu horário com praticidade sem precisar esperar.
+            </p>
+
+            <!-- Botões de Ação -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio%20hoje" target="_blank" class="w-full sm:w-auto pulse-gold-btn bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold text-base px-8 py-4 rounded-full shadow-2xl flex items-center justify-center gap-3 transition">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    <span>Agendar pelo WhatsApp</span>
+                </a>
+                
+                <a href="#servicos" class="w-full sm:w-auto bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/15 text-white font-semibold text-base px-8 py-4 rounded-full transition flex items-center justify-center gap-2">
+                    <i data-lucide="list" class="w-5 h-5 text-gold"></i>
+                    <span>Tabela de Serviços</span>
+                </a>
+            </div>
+
+            <!-- Badges Inferiores -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14 pt-8 border-t border-darkBorder text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-gold/10 text-gold">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Pontualidade</h4>
+                        <p class="text-sm font-bold text-white">Sem Fila de Espera</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400">
+                        <i data-lucide="coffee" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Conforto</h4>
+                        <p class="text-sm font-bold text-white">Café & Cerveja Gelada</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-gold/10 text-gold">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Mestres da Navalha</h4>
+                        <p class="text-sm font-bold text-white">Profissionais de Elite</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400">
+                        <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Local</h4>
+                        <p class="text-sm font-bold text-white truncate max-w-[120px]" title="Tv. Otávio Santos, 59 - Recreio, Vitória da Conquista - BA, 45020-760">Tv. Otávio Santos, 59 - Recreio, Vitória da Conquista - BA, 45020-760</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVIÇOS & PREÇOS -->
+    <section id="servicos" class="py-20 bg-darkCard border-y border-darkBorder">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-bold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/20">Menu de Serviços</span>
+                <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mt-4 mb-4 uppercase">Cortes, Barba & Cuidados</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Técnicas apuradas e produtos de linha profissional para valorizar o seu estilo.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Serviço 1 -->
+                <div class="bg-darkBg p-6 rounded-2xl border border-darkBorder hover:border-gold/40 transition flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                            <i data-lucide="scissors" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-white group-hover:text-gold transition">Corte Masculino Completo</h3>
+                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">Degradê, tesoura ou social com lavagem e finalização premium.</p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0 ml-4">
+                        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20Corte%20Masculino" target="_blank" class="bg-gold/10 hover:bg-gold hover:text-black text-gold text-xs font-bold px-3 py-2 rounded-lg transition">Agendar</a>
+                    </div>
+                </div>
+
+                <!-- Serviço 2 -->
+                <div class="bg-darkBg p-6 rounded-2xl border border-darkBorder hover:border-gold/40 transition flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-white group-hover:text-gold transition">Barboterapia Tradicional</h3>
+                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">Toalha quente, óleos essenciais, massagem facial e navalha afiada.</p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0 ml-4">
+                        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20Barboterapia" target="_blank" class="bg-gold/10 hover:bg-gold hover:text-black text-gold text-xs font-bold px-3 py-2 rounded-lg transition">Agendar</a>
+                    </div>
+                </div>
+
+                <!-- Serviço 3 -->
+                <div class="bg-darkBg p-6 rounded-2xl border border-darkBorder hover:border-gold/40 transition flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                            <i data-lucide="crown" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-white group-hover:text-gold transition">Combo VIP (Cabelo + Barba)</h3>
+                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">O pacote completo para renovar o visual e relaxar.</p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0 ml-4">
+                        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20o%20Combo%20VIP%20(Cabelo%20+%20Barba)" target="_blank" class="bg-gold/10 hover:bg-gold hover:text-black text-gold text-xs font-bold px-3 py-2 rounded-lg transition">Agendar</a>
+                    </div>
+                </div>
+
+                <!-- Serviço 4 -->
+                <div class="bg-darkBg p-6 rounded-2xl border border-darkBorder hover:border-gold/40 transition flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                            <i data-lucide="smile" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-white group-hover:text-gold transition">Sobrancelha & Acabamento</h3>
+                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">Alinhamento preciso na navalha ou pinça para harmonizar o rosto.</p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0 ml-4">
+                        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20Sobrancelha%20e%20Acabamento" target="_blank" class="bg-gold/10 hover:bg-gold hover:text-black text-gold text-xs font-bold px-3 py-2 rounded-lg transition">Agendar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROVA SOCIAL / AVALIAÇÕES -->
+    <section id="avaliacoes" class="py-20 bg-darkBg">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/20">Depoimentos</span>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mt-3 uppercase">Quem Vem, Recomenda</h2>
+                </div>
+                <div class="flex items-center gap-4 bg-darkCard border border-darkBorder px-5 py-3 rounded-2xl shadow-lg">
+                    <div class="text-3xl font-extrabold text-gold font-heading">5,0</div>
+                    <div class="flex flex-col">
+                        <div class="flex text-gold">
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                        </div>
+                        <span class="text-xs text-gray-400 mt-0.5">6 avaliações no Google</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-darkCard p-6 rounded-2xl border border-darkBorder shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-gold mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm italic mb-6 leading-relaxed">
+                            "Melhor atendimento da cidade! Pontualidade britânica, café top e o corte ficou impecável. Não corto mais em outro lugar."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-darkBorder">
+                        <div class="w-10 h-10 rounded-full bg-gold/20 text-gold font-bold flex items-center justify-center text-sm">
+                            F
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Felipe Santos</h4>
+                            <span class="text-xs text-gray-500">Avaliação do Google</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-darkCard p-6 rounded-2xl border border-darkBorder shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-gold mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm italic mb-6 leading-relaxed">
+                            "A barboterapia é uma experiência à parte, muito relaxante. Ambiente muito limpo, climatizado e de altíssimo nível."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-darkBorder">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-sm">
+                            G
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Guilherme Ramos</h4>
+                            <span class="text-xs text-gray-500">Avaliação do Google</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-darkCard p-6 rounded-2xl border border-darkBorder shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-gold mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-gold"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm italic mb-6 leading-relaxed">
+                            "Equipe super profissional, pegaram exatamente a ideia do corte que eu queria. Recomendo muito!"
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-darkBorder">
+                        <div class="w-10 h-10 rounded-full bg-gold/20 text-gold font-bold flex items-center justify-center text-sm">
+                            E
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Eduardo Lima</h4>
+                            <span class="text-xs text-gray-500">Avaliação do Google</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOCALIZAÇÃO -->
+    <section id="localizacao" class="py-20 bg-darkCard border-t border-darkBorder">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/20">Endereço & Rota</span>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mt-4 mb-6 uppercase">Como Chegar</h2>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 rounded-xl bg-gold/10 text-gold shrink-0">
+                                <i data-lucide="map-pin" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Endereço</h4>
+                                <p class="text-gray-400 text-sm mt-1">Tv. Otávio Santos, 59 - Recreio, Vitória da Conquista - BA, 45020-760</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
+                                <i data-lucide="phone" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">WhatsApp / Contato</h4>
+                                <p class="text-gray-400 text-sm mt-1">(77) 99844-0312</p>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        
+                        <a href="https://www.google.com/maps/search/?api=1&query=Tv.%20Ot%C3%A1vio%20Santos%2C%2059%20-%20Recreio%2C%20Vit%C3%B3ria%20da%20Conquista%20-%20BA%2C%2045020-760" target="_blank" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2 text-sm">
+                            <i data-lucide="navigation" class="w-4 h-4 text-gold"></i>
+                            <span>Abrir no GPS / Google Maps</span>
+                        </a>
+                        
+
+                        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2 text-sm">
+                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                            <span>Agendar no WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mapa -->
+                <div class="rounded-3xl overflow-hidden border border-darkBorder shadow-2xl bg-darkBg h-[380px] relative">
+                    
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        marginheight="0" 
+                        marginwidth="0" 
+                        src="https://maps.google.com/maps?q=Tv.%20Ot%C3%A1vio%20Santos%2C%2059%20-%20Recreio%2C%20Vit%C3%B3ria%20da%20Conquista%20-%20BA%2C%2045020-760&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                        class="filter contrast-125 opacity-90 hover:opacity-100 transition duration-300">
+                    </iframe>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black border-t border-darkBorder py-12 text-gray-500 text-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gold/20 text-gold flex items-center justify-center">
+                    <i data-lucide="scissors" class="w-4 h-4"></i>
+                </div>
+                <span class="font-bold text-gray-300 font-heading uppercase">BARBEARIA NOBELL</span>
+            </div>
+            
+            <p class="text-xs text-gray-500 text-center sm:text-left">
+                © Todos os direitos reservados. Agendamentos diretos e atendimento personalizado.
+            </p>
+
+            <div class="flex items-center gap-4 text-xs">
+                <a href="#servicos" class="hover:text-gold transition">Serviços</a>
+                <a href="#avaliacoes" class="hover:text-gold transition">Avaliações</a>
+                <a href="#localizacao" class="hover:text-gold transition">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÃO FLUTUANTE WHATSAPP -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a href="https://wa.me/5577998440312?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20um%20hor%C3%A1rio" target="_blank" class="flex items-center gap-3 bg-[#25D366] hover:bg-[#20ba59] text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl shadow-black/80 hover:scale-105 transition duration-300">
+            <i data-lucide="message-circle" class="w-6 h-6 fill-white"></i>
+            <span class="hidden sm:inline font-bold text-sm tracking-wide">Agendar Horário</span>
+        </a>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

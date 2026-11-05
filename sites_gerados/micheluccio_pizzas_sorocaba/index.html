@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micheluccio Pizzas Sorocaba | Sabores Inesquecíveis & Delivery Oficial</title>
+    <meta name="description" content="Conheça o cardápio oficial de Micheluccio Pizzas Sorocaba. Faça seu pedido rápido pelo WhatsApp ou venha nos visitar em Av. Barão de Tatuí, 417 - Jardim Vergueiro, Sorocaba - SP, 18030-000.">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E65100',
+                        primaryHover: '#BF360C',
+                        accent: '#FFB300',
+                        dark: '#121212',
+                        darkCard: '#1E1E1E'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass-header {
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hero-pattern {
+            background-image: radial-gradient(rgba(230, 81, 0, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-btn {
+            animation: pulse-subtle 2.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#0D0D0D] text-gray-100 font-sans antialiased selection:bg-primary selection:text-white pb-14">
+
+    <!-- BARRA DEMO DE PROPOSTA COMERCIAL (Fixa no topo) -->
+    <div class="bg-gradient-to-r from-amber-600 to-primary text-white text-xs sm:text-sm py-2 px-4 text-center font-semibold shadow-md flex items-center justify-center gap-2">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>Demonstração exclusiva desenvolvida para <strong>Micheluccio Pizzas Sorocaba</strong></span>
+        <span class="hidden md:inline">| Quer colocar no ar com seu próprio domínio (.com.br)?</span>
+        <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Vi%20a%20demonstra%C3%A7%C3%A3o%20do%20site%20e%20gostei,%20vamos%20conversar" target="_blank" class="underline ml-2 bg-black/20 hover:bg-black/40 px-2.5 py-0.5 rounded-full transition">Falar agora</a>
+    </div>
+
+    <!-- NAVBAR NAVEGAÇÃO -->
+    <header class="sticky top-0 z-40 glass-header border-b border-white/10 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white shadow-lg shadow-primary/30 group-hover:scale-105 transition">
+                    <i data-lucide="utensils" class="w-5 h-5"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-serif font-bold text-lg sm:text-xl text-white tracking-tight leading-tight">Micheluccio Pizzas Sorocaba</span>
+                    <span class="text-xs text-amber-400 font-medium flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>
+                        4,6 no Google (2.492 avaliações)
+                    </span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+                <a href="#destaques" class="hover:text-amber-400 transition">Destaques</a>
+                <a href="#cardapio" class="hover:text-amber-400 transition">Especialidades</a>
+                <a href="#avaliacoes" class="hover:text-amber-400 transition">Avaliações</a>
+                <a href="#localizacao" class="hover:text-amber-400 transition">Localização</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/551532328868" target="_blank" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold px-4 sm:px-5 py-2.5 rounded-full shadow-lg shadow-emerald-900/30 flex items-center gap-2 text-sm transition hover:scale-105">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    <span>Fazer Pedido</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-[580px] flex items-center justify-center overflow-hidden py-16 sm:py-24">
+        <!-- Background Imagem com Máscara Escura -->
+        <div class="absolute inset-0 z-0">
+            
+            <img src="https://lh3.googleusercontent.com/grass-cs/AABkmLdabR8Glzp9r6i5jZb16or1y_UYHJLC2-3iT6auOxocs2hUZ8W54LaFcEkfOqPO96jU1_js7AkOT781CB9j3dLVw1WVG81hEouAXT3qAQkkV-ZLp1U5Os2o6tFQaDBCoYAiiQRx=w1200-h800-k-no" alt="Micheluccio Pizzas Sorocaba" class="w-full h-full object-cover object-center brightness-50 contrast-125 scale-105 transform motion-safe:animate-pulse" style="animation-duration: 8s;">
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/80 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0D0D0D]/90 via-[#0D0D0D]/60 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+            <!-- Selo de Avaliação do Google -->
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-amber-300 mb-6 shadow-xl">
+                <span class="flex items-center text-amber-400">
+                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                </span>
+                <span class="text-white">4,6</span>
+                <span class="text-gray-300">| 2.492 clientes recomendam no Google</span>
+            </div>
+
+            <!-- Título Principal -->
+            <h1 class="font-serif text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-6 max-w-4xl mx-auto">
+                A melhor experiência gastronômica de <span class="bg-gradient-to-r from-amber-400 via-primary to-amber-500 bg-clip-text text-transparent">Micheluccio Pizzas Sorocaba</span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                Sabores artesanais preparados com ingredientes selecionados de alta qualidade. Faça seu pedido direto pelo nosso WhatsApp oficial ou venha desfrutar de um ambiente acolhedor.
+            </p>
+
+            <!-- Botões de Ação (CTAs) -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20pelo%20card%C3%A1pio%20oficial" target="_blank" class="w-full sm:w-auto pulse-btn bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold text-base sm:text-lg px-8 py-4 rounded-full shadow-2xl shadow-emerald-950/60 flex items-center justify-center gap-3 transition">
+                    <i data-lucide="message-circle" class="w-6 h-6"></i>
+                    <span>Fazer Pedido pelo WhatsApp</span>
+                </a>
+                
+                <a href="#cardapio" class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-semibold text-base px-8 py-4 rounded-full transition flex items-center justify-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5 text-amber-400"></i>
+                    <span>Ver Destaques</span>
+                </a>
+            </div>
+
+            <!-- Mini Vantagens Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14 pt-8 border-t border-white/10 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Preparo & Entrega</h4>
+                        <p class="text-sm font-bold text-white">Rápido e Quentinho</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Qualidade</h4>
+                        <p class="text-sm font-bold text-white">Ingredientes Premium</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400">
+                        <i data-lucide="badge-percent" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Pedido Direto</h4>
+                        <p class="text-sm font-bold text-white">Sem taxas abusivas</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400">
+                        <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs text-gray-400">Localização</h4>
+                        <p class="text-sm font-bold text-white truncate max-w-[120px]" title="Av. Barão de Tatuí, 417 - Jardim Vergueiro, Sorocaba - SP, 18030-000">Av. Barão de Tatuí, 417 - Jardim Vergueiro, Sorocaba - SP, 18030-000</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DESTAQUES DO CARDÁPIO -->
+    <section id="cardapio" class="py-20 bg-[#121212] relative hero-pattern border-y border-white/5">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Cardápio Selecionado</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mt-4 mb-4">Os Favoritos dos Clientes</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Pratos feitos na hora com receitas exclusivas e os melhores ingredientes do mercado.</p>
+            </div>
+
+            <!-- Cards de Itens -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Item 1 -->
+                <div class="bg-darkCard rounded-2xl overflow-hidden border border-white/10 hover:border-amber-500/50 transition-all duration-300 group hover:-translate-y-1.5 shadow-xl">
+                    <div class="h-52 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80" alt="Especialidade da Casa" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <span class="absolute top-3 right-3 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Mais Pedido</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-xl text-white group-hover:text-amber-400 transition">Especialidade da Casa</h3>
+                            <span class="text-amber-400 font-extrabold text-lg">Consulte</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                            Nossa receita mais elogiada pelos clientes no Google Maps. Sabor incomparável, textura perfeita e ingredientes frescos.
+                        </p>
+                        <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Gostaria%20de%20pedir%20a%20Especialidade%20da%20Casa" target="_blank" class="w-full bg-white/5 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl border border-white/10 hover:border-transparent transition flex items-center justify-center gap-2 text-sm">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Pedir no WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="bg-darkCard rounded-2xl overflow-hidden border border-white/10 hover:border-amber-500/50 transition-all duration-300 group hover:-translate-y-1.5 shadow-xl">
+                    <div class="h-52 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80" alt="Combo Premium" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <span class="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Destaque</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-xl text-white group-hover:text-amber-400 transition">Combo Especial</h3>
+                            <span class="text-amber-400 font-extrabold text-lg">Consulte</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                            A combinação perfeita para compartilhar em família ou com amigos. Acompanhamentos artesanais e muito sabor.
+                        </p>
+                        <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Gostaria%20de%20pedir%20o%20Combo%20Especial" target="_blank" class="w-full bg-white/5 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl border border-white/10 hover:border-transparent transition flex items-center justify-center gap-2 text-sm">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Pedir no WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="bg-darkCard rounded-2xl overflow-hidden border border-white/10 hover:border-amber-500/50 transition-all duration-300 group hover:-translate-y-1.5 shadow-xl">
+                    <div class="h-52 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=80" alt="Sobremesas & Acompanhamentos" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <span class="absolute top-3 right-3 bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Irresistível</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-xl text-white group-hover:text-amber-400 transition">Opção Artesanal</h3>
+                            <span class="text-amber-400 font-extrabold text-lg">Consulte</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                            Finalize sua refeição da melhor forma ou experimente nossas entradas preparadas com todo carinho da casa.
+                        </p>
+                        <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Gostaria%20de%20conhecer%20as%20op%C3%A7%C3%B5es%20artesanais" target="_blank" class="w-full bg-white/5 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl border border-white/10 hover:border-transparent transition flex items-center justify-center gap-2 text-sm">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Pedir no WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chamada para cardápio completo -->
+            <div class="mt-12 text-center">
+                <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Pode%20me%20enviar%20o%20card%C3%A1pio%20completo%20em%20PDF%20ou%20fotos?" target="_blank" class="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 font-semibold text-base transition">
+                    <span>Solicitar Cardápio Completo em PDF pelo WhatsApp</span>
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROVA SOCIAL GOOGLE MAPS -->
+    <section id="avaliacoes" class="py-20 bg-[#0D0D0D]">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Depoimentos Reais</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mt-3">Reconhecimento no Google Maps</h2>
+                </div>
+                <div class="flex items-center gap-4 bg-darkCard border border-white/10 px-5 py-3 rounded-2xl shadow-lg">
+                    <div class="text-3xl font-extrabold text-amber-400 font-serif">4,6</div>
+                    <div class="flex flex-col">
+                        <div class="flex text-amber-400">
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        </div>
+                        <span class="text-xs text-gray-400 mt-0.5">2.492 avaliações verificadas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Reviews -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Depoimento 1 -->
+                <div class="bg-darkCard p-6 rounded-2xl border border-white/10 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-amber-400 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm italic mb-6 leading-relaxed">
+                            "Comida sensacional! O atendimento foi super rápido e a comida chegou quente e muito saborosa. Com certeza o melhor lugar da região."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 text-primary font-bold flex items-center justify-center text-sm">
+                            M
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Marcelo Silva</h4>
+                            <span class="text-xs text-gray-500">Cliente Verificado Google</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Depoimento 2 -->
+                <div class="bg-darkCard p-6 rounded-2xl border border-white/10 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-amber-400 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm italic mb-6 leading-relaxed">
+                            "Qualidade impecável nos ingredientes e muito capricho na embalagem. Pedimos pelo WhatsApp e o atendimento foi atencioso e pontual."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-sm">
+                            A
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Aline Costa</h4>
+                            <span class="text-xs text-gray-500">Cliente Verificada Google</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Depoimento 3 -->
+                <div class="bg-darkCard p-6 rounded-2xl border border-white/10 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-amber-400 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm italic mb-6 leading-relaxed">
+                            "Ambiente excelente e a comida supera as expectativas toda vez que vou ou peço em casa. Recomendo de olhos fechados!"
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-sm">
+                            R
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Rodrigo Almeida</h4>
+                            <span class="text-xs text-gray-500">Cliente Verificado Google</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="mt-8 text-center">
+                <a href="https://www.google.com/maps/place/Micheluccio+Pizzas+Sorocaba/data=!4m7!3m6!1s0x94c58a96f545ecd9:0x4b423d282eef8142!8m2!3d-23.507051!4d-47.462409!16s%2Fg%2F1vfn7rys!19sChIJ2exF9ZaKxZQRQoHvLig9Qks?authuser=0&hl=pt-BR&g_ep=EgoyMDI2MTEwMi4wIJJjKgBIAVAD&rclk=1" target="_blank" class="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-white transition">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    <span>Ver perfil oficial e avaliações completas no Google Maps</span>
+                </a>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- LOCALIZAÇÃO & HORÁRIO -->
+    <section id="localizacao" class="py-20 bg-[#121212] border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Onde Estamos</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mt-4 mb-6">Venha nos Conhecer</h2>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                                <i data-lucide="map-pin" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Endereço</h4>
+                                <p class="text-gray-400 text-sm mt-1">Av. Barão de Tatuí, 417 - Jardim Vergueiro, Sorocaba - SP, 18030-000</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
+                                <i data-lucide="phone" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Contato & WhatsApp</h4>
+                                <p class="text-gray-400 text-sm mt-1">(15) 3232-8868</p>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        
+                        <a href="https://www.google.com/maps/search/?api=1&query=Av.%20Bar%C3%A3o%20de%20Tatu%C3%AD%2C%20417%20-%20Jardim%20Vergueiro%2C%20Sorocaba%20-%20SP%2C%2018030-000" target="_blank" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2 text-sm">
+                            <i data-lucide="navigation" class="w-4 h-4 text-amber-400"></i>
+                            <span>Abrir no GPS / Google Maps</span>
+                        </a>
+                        
+
+                        <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2 text-sm">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            <span>Conversar no WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card Visual do Mapa -->
+                <div class="rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-darkCard h-[380px] relative">
+                    
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        marginheight="0" 
+                        marginwidth="0" 
+                        src="https://maps.google.com/maps?q=Av.%20Bar%C3%A3o%20de%20Tatu%C3%AD%2C%20417%20-%20Jardim%20Vergueiro%2C%20Sorocaba%20-%20SP%2C%2018030-000&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                        class="filter contrast-125 opacity-90 hover:opacity-100 transition duration-300">
+                    </iframe>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#080808] border-t border-white/5 py-12 text-gray-500 text-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
+                    <i data-lucide="utensils" class="w-4 h-4"></i>
+                </div>
+                <span class="font-bold text-gray-300">Micheluccio Pizzas Sorocaba</span>
+            </div>
+            
+            <p class="text-xs text-gray-500 text-center sm:text-left">
+                © Todos os direitos reservados. Todos os pedidos são direcionados ao canal oficial.
+            </p>
+
+            <div class="flex items-center gap-4 text-xs">
+                <a href="#cardapio" class="hover:text-gray-300 transition">Cardápio</a>
+                <a href="#avaliacoes" class="hover:text-gray-300 transition">Avaliações</a>
+                <a href="#localizacao" class="hover:text-gray-300 transition">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÃO FLUTUANTE DE WHATSAPP (Mobile e Desktop) -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a href="https://wa.me/551532328868?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20fazer%20um%20pedido" target="_blank" class="flex items-center gap-3 bg-[#25D366] hover:bg-[#20ba59] text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl shadow-black/80 hover:scale-105 transition duration-300 group">
+            <i data-lucide="message-circle" class="w-6 h-6 fill-white"></i>
+            <span class="hidden sm:inline font-bold text-sm tracking-wide">Fazer Pedido</span>
+        </a>
+    </div>
+
+    <!-- Inicializar Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
