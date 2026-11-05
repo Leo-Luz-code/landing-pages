@@ -1,7 +1,7 @@
 #!/bin/bash
 # Inicia um servidor local rápido para visualizar todos os sites gerados
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/sites_gerados"
+cd "$SCRIPT_DIR"
 
 PORT=8080
 echo "=================================================="

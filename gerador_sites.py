@@ -12,8 +12,10 @@ import urllib.parse
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
-TEMPLATES_DIR = Path(__file__).parent / "templates"
-OUTPUT_DIR = Path(__file__).parent / "sites_gerados"
+ROOT_DIR = Path(__file__).parent
+TEMPLATES_DIR = ROOT_DIR / "templates"
+OUTPUT_DIR = ROOT_DIR / "sites_gerados"
+GITHUB_PAGES_BASE = "https://leo-luz-code.github.io/landing-pages"
 
 CATEGORY_MAPPING = {
     "gastronomia": [
@@ -120,15 +122,16 @@ def generate_sites(json_file_path: str, template_override: str = None):
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(html_content)
             
-        demo_url = f"preview/{slug}/index.html"
-        pitch_msg = create_pitch_message(item, f"https://seusite.com.br/{slug}")
+        demo_rel_url = f"sites_gerados/{slug}/index.html"
+        demo_public_url = f"{GITHUB_PAGES_BASE}/sites_gerados/{slug}/"
+        pitch_msg = create_pitch_message(item, demo_public_url)
         
         generated_list.append({
             **item,
             "slug": slug,
             "template_usado": tmpl_name,
             "local_path": str(index_file),
-            "demo_rel_url": f"{slug}/index.html",
+            "demo_rel_url": demo_rel_url,
             "pitch_msg": pitch_msg
         })
         
@@ -224,6 +227,12 @@ def generate_dashboard(generated_list: list):
 </html>
     """
     
+    # Salva na raiz do projeto para o GitHub Pages
+    root_index = ROOT_DIR / "index.html"
+    with open(root_index, "w", encoding="utf-8") as f:
+        f.write(dashboard_html)
+        
+    # Salva também uma cópia em sites_gerados/ para retrocompatibilidade
     with open(OUTPUT_DIR / "index.html", "w", encoding="utf-8") as f:
         f.write(dashboard_html)
 
