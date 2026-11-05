@@ -133,7 +133,7 @@ def generate_sites(json_file_path: str, template_override: str = None):
             f.write(html_content)
             
         demo_rel_url = f"sites_gerados/{slug}/index.html"
-        demo_public_url = f"{GITHUB_PAGES_BASE}/sites_gerados/{slug}/"
+        demo_public_url = f"{GITHUB_PAGES_BASE}/sites_gerados/{slug}/index.html"
         pitch_msg = create_pitch_message(item, demo_public_url)
         
         generated_list.append({
