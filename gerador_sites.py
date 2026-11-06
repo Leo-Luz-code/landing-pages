@@ -2,7 +2,7 @@
 """
 Gerador Automático de Landing Pages para Leads do Google Maps
 Renderiza templates profissionais e alimenta o banco de dados 'database.json'.
-O painel 'index.html' carrega os dados dinamicamente via JavaScript com laço de repetição.
+O painel 'index.html' gerencia status de contato (Pendentes vs Abordados) com persistência no localStorage.
 """
 
 import os
@@ -46,9 +46,7 @@ def detect_template(item: dict) -> str:
     """Detecta automaticamente o melhor template baseado na categoria e nome do negócio."""
     text = f"{item.get('categoria', '')} {item.get('nome', '')}".lower()
     
-    # Ordem prioritária de checagem
     priority_order = ["barbearia_beleza", "saude", "gastronomia", "servicos_locais"]
-    
     for template_name in priority_order:
         keywords = CATEGORY_MAPPING[template_name]
         for kw in keywords:
@@ -124,18 +122,15 @@ def generate_sites(json_file_path: str, template_override: str = None):
         site_folder = OUTPUT_DIR / slug
         site_folder.mkdir(parents=True, exist_ok=True)
         
-        # Renderiza a página da empresa
         html_content = template.render(**item)
         index_file = site_folder / "index.html"
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(html_content)
             
-        # Padrão de URLs atualizado para /sites/{slug}/index.html
         demo_rel_url = f"sites/{slug}/index.html"
         demo_public_url = f"{GITHUB_PAGES_BASE}/sites/{slug}/index.html"
         pitch_msg = create_pitch_message(item, demo_public_url)
         
-        # Classificação de Score
         status_lead = item.get("status_lead", "")
         score_lead = item.get("score_lead", "LEAD")
         if "SEM_SITE" in status_lead or "ouro" in score_lead.lower():
@@ -173,7 +168,6 @@ def generate_sites(json_file_path: str, template_override: str = None):
         print(f"[{idx}/{len(leads)}] ✅ {item['nome']}")
         print(f"   Template: {tmpl_name.upper()} | Pasta: sites/{slug}/")
         
-    # Salva o arquivo de banco de dados 'database.json' e renderiza o novo painel dinâmico
     save_database_and_dashboard(database_records)
     
     print("\n" + "=" * 60)
@@ -187,9 +181,9 @@ def generate_sites(json_file_path: str, template_override: str = None):
 def save_database_and_dashboard(database_records: list):
     """
     1. Salva o banco de dados 'database.json'.
-    2. Gera o painel 'index.html' que puxa os dados do JSON e renderiza os cards com um loop for em JavaScript.
+    2. Gera o painel 'index.html' com CRM de status de envio (localStorage),
+       filtros por nicho, nome, ouro/prata/bronze e status de contato.
     """
-    # 1. Salva database.json na raiz e na pasta sites/
     db_path_root = ROOT_DIR / "database.json"
     with open(db_path_root, "w", encoding="utf-8") as f:
         json.dump(database_records, f, ensure_ascii=False, indent=2)
@@ -198,7 +192,6 @@ def save_database_and_dashboard(database_records: list):
     with open(db_path_sites, "w", encoding="utf-8") as f:
         json.dump(database_records, f, ensure_ascii=False, indent=2)
 
-    # 2. Cria o index.html dinâmico
     json_embedded = json.dumps(database_records, ensure_ascii=False)
 
     dashboard_html = f"""<!DOCTYPE html>
@@ -220,25 +213,25 @@ def save_database_and_dashboard(database_records: list):
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider mb-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Banco de Dados Ativo • JSON
+                    CRM & Prospecção Ativa
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Painel de Landing Pages</h1>
-                <p class="text-slate-400 text-sm mt-1">Dados carregados dinamicamente via <code class="text-indigo-400 font-mono">database.json</code> com renderização reativa.</p>
+                <p class="text-slate-400 text-sm mt-1">Gerencie seus leads, envie mensagens e controle quem já foi abordado para evitar mensagens duplicadas.</p>
             </div>
             
             <!-- CONTADORES GERAIS -->
             <div class="flex flex-wrap items-center gap-2" id="statsContainer">
-                <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-xs sm:text-sm">
+                <div class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl text-xs sm:text-sm">
                     <span class="text-slate-400">Total:</span> <strong id="statTotal" class="text-white font-bold">0</strong>
                 </div>
                 <div class="bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-amber-300 font-semibold">
+                    ⏳ Pendentes: <strong id="statPendente">0</strong>
+                </div>
+                <div class="bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-emerald-300 font-semibold">
+                    ✅ Abordados: <strong id="statAbordado">0</strong>
+                </div>
+                <div class="bg-slate-800/50 border border-slate-700/80 px-3 py-2 rounded-xl text-xs sm:text-sm text-amber-200">
                     🔥 Ouro: <strong id="statOuro">0</strong>
-                </div>
-                <div class="bg-slate-500/10 border border-slate-700 px-3 py-2 rounded-xl text-xs sm:text-sm text-slate-300">
-                    ⚡ Prata: <strong id="statPrata">0</strong>
-                </div>
-                <div class="bg-blue-500/10 border border-blue-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-blue-300">
-                    ❄️ Bronze: <strong id="statBronze">0</strong>
                 </div>
             </div>
         </header>
@@ -247,25 +240,34 @@ def save_database_and_dashboard(database_records: list):
         <div class="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl p-5 mb-8 shadow-2xl">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <!-- 1. Campo de Busca por Nome / Bairro / Cidade -->
-                <div class="md:col-span-5 relative">
+                <div class="md:col-span-4 relative">
                     <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                     <input type="text" id="searchInput" placeholder="Buscar por nome do estabelecimento ou bairro..." class="w-full bg-slate-950/80 border border-slate-700/80 focus:border-indigo-500 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition">
                 </div>
 
-                <!-- 2. Filtro por Nicho -->
+                <!-- 2. Filtro por Status de Contato (CRM) -->
                 <div class="md:col-span-3">
-                    <select id="nicheFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
-                        <option value="todos">Todos os Nichos</option>
-                        <option value="barbearia_beleza">💈 Barbearia & Beleza</option>
-                        <option value="gastronomia">🍕 Gastronomia</option>
-                        <option value="saude">🩺 Saúde & Clínicas</option>
-                        <option value="servicos_locais">🔧 Serviços Locais</option>
+                    <select id="contactFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer font-medium">
+                        <option value="todos">Todos os Contatos</option>
+                        <option value="pendente">⏳ Apenas Pendentes (Não abordados)</option>
+                        <option value="enviado">✅ Apenas Já Abordados</option>
                     </select>
                 </div>
 
-                <!-- 3. Filtro por Potencial (Ouro / Prata / Bronze) -->
-                <div class="md:col-span-3">
-                    <select id="scoreFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                <!-- 3. Filtro por Nicho -->
+                <div class="md:col-span-2">
+                    <select id="nicheFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-3 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                        <option value="todos">Todos os Nichos</option>
+                        <option value="barbearia_beleza">💈 Barbearias</option>
+                        <option value="gastronomia">🍕 Gastronomia</option>
+                        <option value="saude">🩺 Saúde</option>
+                        <option value="servicos_locais">🔧 Oficinas/Serviços</option>
+                    </select>
+                </div>
+
+                <!-- 4. Filtro por Potencial (Ouro / Prata / Bronze) -->
+                <div class="md:col-span-2">
+                    <select id="scoreFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-3 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
                         <option value="todos">Todos os Níveis</option>
                         <option value="ouro">🔥 Ouro (Sem Site)</option>
                         <option value="prata">⚡ Prata (App / Rede Social)</option>
@@ -273,7 +275,7 @@ def save_database_and_dashboard(database_records: list):
                     </select>
                 </div>
 
-                <!-- 4. Botão Limpar -->
+                <!-- 5. Botão Limpar -->
                 <div class="md:col-span-1 flex items-center">
                     <button id="clearFiltersBtn" title="Limpar todos os filtros" class="w-full h-full bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-semibold transition flex items-center justify-center p-3">
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
@@ -285,9 +287,9 @@ def save_database_and_dashboard(database_records: list):
             <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-800/80 text-xs">
                 <span class="text-slate-400 font-semibold mr-1">Atalhos rápidos:</span>
                 <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="all">Todos</button>
-                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 transition" data-filter-type="score" data-filter-val="ouro">🔥 Apenas Ouro</button>
-                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="niche" data-filter-val="barbearia_beleza">💈 Barbearias</button>
-                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="niche" data-filter-val="gastronomia">🍕 Gastronomia</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 transition font-bold" data-filter-type="contact" data-filter-val="pendente">⏳ Apenas Pendentes</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/20 transition font-bold" data-filter-type="contact" data-filter-val="enviado">✅ Já Abordados</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="score" data-filter-val="ouro">🔥 Ouro</button>
                 
                 <div class="ml-auto text-xs text-slate-400">
                     Mostrando <span id="visibleCount" class="font-bold text-white text-sm">0</span> de <span id="totalCount">0</span> sites
@@ -295,7 +297,7 @@ def save_database_and_dashboard(database_records: list):
             </div>
         </div>
 
-        <!-- GRID ONDE OS CARDS SERÃO GERADOS DINAMICAMENTE PELO LOOP JAVASCRIPT -->
+        <!-- GRID DE CARDS DINÂMICOS -->
         <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
         <!-- MENSAGEM QUANDO NENHUM RESULTADO FOR ENCONTRADO -->
@@ -316,12 +318,14 @@ def save_database_and_dashboard(database_records: list):
 {json_embedded}
     </script>
 
-    <!-- MOTOR DINÂMICO DE RENDERIZAÇÃO & FILTROS -->
+    <!-- MOTOR DINÂMICO DE CRM, RENDERIZAÇÃO & FILTROS -->
     <script>
+        const STORAGE_KEY = 'landing_pages_crm_contacted';
         let allLeads = [];
 
         // Elementos do DOM
         const searchInput = document.getElementById('searchInput');
+        const contactFilter = document.getElementById('contactFilter');
         const nicheFilter = document.getElementById('nicheFilter');
         const scoreFilter = document.getElementById('scoreFilter');
         const clearBtn = document.getElementById('clearFiltersBtn');
@@ -331,7 +335,67 @@ def save_database_and_dashboard(database_records: list):
         const emptyState = document.getElementById('emptyState');
         const pills = document.querySelectorAll('.quick-pill');
 
-        // Carrega os dados do database.json
+        // Gerenciamento de Histórico no LocalStorage
+        function getContactHistory() {{
+            try {{
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {{}};
+            }} catch (e) {{
+                return {{}};
+            }}
+        }}
+
+        function saveContactHistory(history) {{
+            try {{
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            }} catch (e) {{
+                console.error('Erro ao salvar no localStorage:', e);
+            }}
+        }}
+
+        // Marca um estabelecimento como contatado
+        function markAsContacted(leadId) {{
+            const history = getContactHistory();
+            const now = new Date();
+            const dataStr = now.toLocaleDateString('pt-BR', {{ day: '2-digit', month: '2-digit' }});
+            const horaStr = now.toLocaleTimeString('pt-BR', {{ hour: '2-digit', minute: '2-digit' }});
+            
+            history[leadId] = {{
+                date: dataStr,
+                time: horaStr,
+                timestamp: now.getTime()
+            }};
+            saveContactHistory(history);
+            updateStats(allLeads);
+            filterLeads();
+        }}
+
+        // Alterna status manualmente (desmarcar / marcar)
+        function toggleContactStatus(leadId, e) {{
+            if (e) e.stopPropagation();
+            const history = getContactHistory();
+            if (history[leadId]) {{
+                delete history[leadId];
+            }} else {{
+                const now = new Date();
+                history[leadId] = {{
+                    date: now.toLocaleDateString('pt-BR', {{ day: '2-digit', month: '2-digit' }}),
+                    time: now.toLocaleTimeString('pt-BR', {{ hour: '2-digit', minute: '2-digit' }}),
+                    timestamp: now.getTime()
+                }};
+            }}
+            saveContactHistory(history);
+            updateStats(allLeads);
+            filterLeads();
+        }}
+
+        // Dispara o WhatsApp e marca como contatado automaticamente
+        function handleSendPitch(leadId, waUrl) {{
+            markAsContacted(leadId);
+            window.open(waUrl, '_blank');
+        }}
+
+        // Carrega dados
         async function loadDatabase() {{
             try {{
                 const res = await fetch('database.json?t=' + Date.now());
@@ -347,21 +411,26 @@ def save_database_and_dashboard(database_records: list):
             renderCards(allLeads);
         }}
 
-        // Atualiza contadores do cabeçalho
+        // Atualiza contadores
         function updateStats(data) {{
+            const history = getContactHistory();
             const total = data.length;
             const ouro = data.filter(x => x.score_tag === 'ouro').length;
-            const prata = data.filter(x => x.score_tag === 'prata').length;
-            const bronze = data.filter(x => x.score_tag === 'bronze').length;
+            
+            let abordados = 0;
+            data.forEach(x => {{
+                if (history[x.id]) abordados++;
+            }});
+            const pendentes = total - abordados;
 
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statOuro').innerText = ouro;
-            document.getElementById('statPrata').innerText = prata;
-            document.getElementById('statBronze').innerText = bronze;
+            document.getElementById('statPendente').innerText = pendentes;
+            document.getElementById('statAbordado').innerText = abordados;
             totalCount.innerText = total;
         }}
 
-        // Renderiza os cards usando um laço 'for' dinâmico
+        // Renderiza os cards usando laço 'for'
         function renderCards(items) {{
             cardsGrid.innerHTML = '';
             visibleCount.innerText = items.length;
@@ -372,10 +441,13 @@ def save_database_and_dashboard(database_records: list):
             }}
             emptyState.classList.add('hidden');
 
-            // Laço de repetição dinâmico gerando cada card
+            const history = getContactHistory();
+
             for (let i = 0; i < items.length; i++) {{
                 const item = items[i];
-                
+                const contactInfo = history[item.id];
+                const isContacted = !!contactInfo;
+
                 let scoreBadgeClass = "bg-blue-500/10 text-blue-300 border-blue-500/20";
                 if (item.score_tag === "ouro") {{
                     scoreBadgeClass = "bg-amber-500/10 text-amber-300 border-amber-500/20";
@@ -383,20 +455,49 @@ def save_database_and_dashboard(database_records: list):
                     scoreBadgeClass = "bg-slate-800 text-slate-300 border-slate-700";
                 }}
 
+                // Badge de CRM (Pendente vs Já Abordado)
+                let crmBadgeHtml = '';
+                let cardBorderClass = 'border-slate-800 hover:border-slate-700';
+
+                if (isContacted) {{
+                    cardBorderClass = 'border-emerald-500/40 bg-slate-900/95';
+                    crmBadgeHtml = `
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">
+                            <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <span>Abordado em ${{contactInfo.date || ''}} (${{contactInfo.time || ''}})</span>
+                            <button onclick="toggleContactStatus('${{item.id}}', event)" title="Desmarcar status" class="ml-1 text-slate-400 hover:text-white">
+                                <i data-lucide="x" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    `;
+                }} else {{
+                    crmBadgeHtml = `
+                        <button onclick="toggleContactStatus('${{item.id}}', event)" title="Clique para marcar como já enviado" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 text-xs font-semibold transition">
+                            <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
+                            <span>⏳ Pendente</span>
+                        </button>
+                    `;
+                }}
+
                 const card = document.createElement('div');
-                card.className = "lead-card bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-200 hover:-translate-y-1";
+                card.className = `lead-card bg-slate-900 border ${{cardBorderClass}} rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-200 hover:-translate-y-1 relative`;
+                
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center justify-between gap-2 mb-3">
                             <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-indigo-400 border border-indigo-500/20">${{item.template_badge}}</span>
                             <span class="text-xs font-semibold text-amber-400 flex items-center gap-1">★ ${{item.nota}} (${{item.total_avaliacoes}})</span>
                         </div>
+                        
                         <h2 class="font-bold text-lg text-white mb-2 line-clamp-1" title="${{item.nome}}">${{item.nome}}</h2>
-                        <div class="mb-4">
+                        
+                        <div class="flex flex-wrap items-center gap-2 mb-4">
                             <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg border ${{scoreBadgeClass}}">
                                 ${{item.score_lead}}
                             </span>
+                            ${{crmBadgeHtml}}
                         </div>
+
                         <p class="text-xs text-slate-300 flex items-center gap-2 mb-2">
                             <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
                             <span>${{item.telefone || 'Sem telefone'}}</span>
@@ -413,36 +514,46 @@ def save_database_and_dashboard(database_records: list):
                             <span>Ver Landing Page Pronta</span>
                         </a>
 
-                        <a href="${{item.pitch_wa_url}}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950/50">
+                        <button onclick="handleSendPitch('${{item.id}}', '${{item.pitch_wa_url}}')" class="w-full ${{isContacted ? 'bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}} font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950/50">
                             <i data-lucide="message-circle" class="w-4 h-4"></i>
-                            <span>Enviar Pitch no WhatsApp</span>
-                        </a>
+                            <span>${{isContacted ? 'Enviar Novamente no WhatsApp' : 'Enviar Pitch no WhatsApp'}}</span>
+                        </button>
                     </div>
                 `;
                 cardsGrid.appendChild(card);
             }}
 
-            // Re-renderiza os ícones do Lucide
             lucide.createIcons();
         }}
 
-        // Filtragem dos dados
+        // Filtragem dos dados (busca, contato, nicho e score)
         function filterLeads() {{
             const query = searchInput.value.toLowerCase().trim();
+            const selectedContact = contactFilter.value;
             const selectedNiche = nicheFilter.value;
             const selectedScore = scoreFilter.value;
+
+            const history = getContactHistory();
 
             const filtered = allLeads.filter(item => {{
                 const name = (item.nome || '').toLowerCase();
                 const address = (item.endereco || '').toLowerCase();
                 const niche = item.template || '';
                 const score = item.score_tag || '';
+                const isContacted = !!history[item.id];
 
                 const matchesQuery = !query || name.includes(query) || address.includes(query);
                 const matchesNiche = selectedNiche === 'todos' || niche === selectedNiche;
                 const matchesScore = selectedScore === 'todos' || score === selectedScore;
+                
+                let matchesContact = true;
+                if (selectedContact === 'pendente') {{
+                    matchesContact = !isContacted;
+                }} else if (selectedContact === 'enviado') {{
+                    matchesContact = isContacted;
+                }}
 
-                return matchesQuery && matchesNiche && matchesScore;
+                return matchesQuery && matchesNiche && matchesScore && matchesContact;
             }});
 
             renderCards(filtered);
@@ -450,6 +561,7 @@ def save_database_and_dashboard(database_records: list):
 
         function resetFilters() {{
             searchInput.value = '';
+            contactFilter.value = 'todos';
             nicheFilter.value = 'todos';
             scoreFilter.value = 'todos';
             filterLeads();
@@ -457,6 +569,7 @@ def save_database_and_dashboard(database_records: list):
 
         // Event Listeners
         searchInput.addEventListener('input', filterLeads);
+        contactFilter.addEventListener('change', filterLeads);
         nicheFilter.addEventListener('change', filterLeads);
         scoreFilter.addEventListener('change', filterLeads);
         clearBtn.addEventListener('click', resetFilters);
@@ -468,6 +581,9 @@ def save_database_and_dashboard(database_records: list):
 
                 if (fType === 'all') {{
                     resetFilters();
+                }} else if (fType === 'contact') {{
+                    contactFilter.value = fVal;
+                    filterLeads();
                 }} else if (fType === 'score') {{
                     scoreFilter.value = fVal;
                     filterLeads();
@@ -478,14 +594,12 @@ def save_database_and_dashboard(database_records: list):
             }});
         }});
 
-        // Inicializa ao carregar a página
         document.addEventListener('DOMContentLoaded', loadDatabase);
     </script>
 </body>
 </html>
     """
     
-    # Salva na raiz e dentro da pasta sites/
     with open(ROOT_DIR / "index.html", "w", encoding="utf-8") as f:
         f.write(dashboard_html)
         
