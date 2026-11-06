@@ -75,7 +75,7 @@ def create_pitch_message(item: dict, demo_url: str) -> str:
         f"Para mostrar na prática como vocês podem se destacar ainda mais, montei uma prévia exclusiva e sem compromisso de como ficaria a presença digital oficial de vocês:\n\n"
         f"👉 {demo_url}\n\n"
         f"O site já está otimizado para celulares, com botão de WhatsApp direto para a equipe de vocês e mapa integrado. "
-        f"Se vocês gostarem e fizer sentido, podemos colocar no ar no próprio domínio oficial de vocês esta semana. O que acharam?"
+        f"Se vocês gostarem e fizer sentido, podemos colocar no ar esta semana. O que acharam?"
     )
     return msg
 
