@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Landing Pages Geradas | Prospecção Ativa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B1120] text-slate-100 font-sans p-4 sm:p-8 md:p-12 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+        <!-- HEADER -->
+        <header class="mb-8 pb-8 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Banco de Dados Ativo • JSON
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Painel de Landing Pages</h1>
+                <p class="text-slate-400 text-sm mt-1">Dados carregados dinamicamente via <code class="text-indigo-400 font-mono">database.json</code> com renderização reativa.</p>
+            </div>
+            
+            <!-- CONTADORES GERAIS -->
+            <div class="flex flex-wrap items-center gap-2" id="statsContainer">
+                <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-xs sm:text-sm">
+                    <span class="text-slate-400">Total:</span> <strong id="statTotal" class="text-white font-bold">0</strong>
+                </div>
+                <div class="bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-amber-300 font-semibold">
+                    🔥 Ouro: <strong id="statOuro">0</strong>
+                </div>
+                <div class="bg-slate-500/10 border border-slate-700 px-3 py-2 rounded-xl text-xs sm:text-sm text-slate-300">
+                    ⚡ Prata: <strong id="statPrata">0</strong>
+                </div>
+                <div class="bg-blue-500/10 border border-blue-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-blue-300">
+                    ❄️ Bronze: <strong id="statBronze">0</strong>
+                </div>
+            </div>
+        </header>
+
+        <!-- BARRA DE FILTROS & BUSCA -->
+        <div class="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl p-5 mb-8 shadow-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <!-- 1. Campo de Busca por Nome / Bairro / Cidade -->
+                <div class="md:col-span-5 relative">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por nome do estabelecimento ou bairro..." class="w-full bg-slate-950/80 border border-slate-700/80 focus:border-indigo-500 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition">
+                </div>
+
+                <!-- 2. Filtro por Nicho -->
+                <div class="md:col-span-3">
+                    <select id="nicheFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                        <option value="todos">Todos os Nichos</option>
+                        <option value="barbearia_beleza">💈 Barbearia & Beleza</option>
+                        <option value="gastronomia">🍕 Gastronomia</option>
+                        <option value="saude">🩺 Saúde & Clínicas</option>
+                        <option value="servicos_locais">🔧 Serviços Locais</option>
+                    </select>
+                </div>
+
+                <!-- 3. Filtro por Potencial (Ouro / Prata / Bronze) -->
+                <div class="md:col-span-3">
+                    <select id="scoreFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                        <option value="todos">Todos os Níveis</option>
+                        <option value="ouro">🔥 Ouro (Sem Site)</option>
+                        <option value="prata">⚡ Prata (App / Rede Social)</option>
+                        <option value="bronze">❄️ Bronze (Com Site)</option>
+                    </select>
+                </div>
+
+                <!-- 4. Botão Limpar -->
+                <div class="md:col-span-1 flex items-center">
+                    <button id="clearFiltersBtn" title="Limpar todos os filtros" class="w-full h-full bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-semibold transition flex items-center justify-center p-3">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botões de Atalho Rápido (Pills) -->
+            <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-800/80 text-xs">
+                <span class="text-slate-400 font-semibold mr-1">Atalhos rápidos:</span>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="all">Todos</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 transition" data-filter-type="score" data-filter-val="ouro">🔥 Apenas Ouro</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="niche" data-filter-val="barbearia_beleza">💈 Barbearias</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="niche" data-filter-val="gastronomia">🍕 Gastronomia</button>
+                
+                <div class="ml-auto text-xs text-slate-400">
+                    Mostrando <span id="visibleCount" class="font-bold text-white text-sm">0</span> de <span id="totalCount">0</span> sites
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID ONDE OS CARDS SERÃO GERADOS DINAMICAMENTE PELO LOOP JAVASCRIPT -->
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- MENSAGEM QUANDO NENHUM RESULTADO FOR ENCONTRADO -->
+        <div id="emptyState" class="hidden py-16 text-center bg-slate-900/50 border border-slate-800 rounded-3xl mt-6">
+            <div class="w-16 h-16 rounded-2xl bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="filter-x" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">Nenhum estabelecimento encontrado</h3>
+            <p class="text-sm text-slate-400 max-w-sm mx-auto mb-6">Tente alterar os termos da busca ou redefinir os filtros selecionados.</p>
+            <button onclick="resetFilters()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition">
+                Redefinir Filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- DADOS DE FALLBACK (Garante funcionamento mesmo em navegadores locais offline sem CORS) -->
+    <script id="databaseFallback" type="application/json">
+[{"id": "barbearia_trezentos_barber_shop_pátio_cianê_shoppi", "slug": "barbearia_trezentos_barber_shop_pátio_cianê_shoppi", "nome": "Barbearia Trezentos Barber Shop - Pátio Cianê Shopping Sorocaba", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "393", "telefone": "(15) 98830-2448", "endereco": "Av. Dr. Afonso Vergueiro, 823 - Centro, Sorocaba - SP, 18035-370", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_trezentos_barber_shop_pátio_cianê_shoppi/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_trezentos_barber_shop_pátio_cianê_shoppi/index.html", "pitch_wa_url": "https://wa.me/5515988302448?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABarbearia%20Trezentos%20Barber%20Shop%20-%20P%C3%A1tio%20Cian%C3%AA%20Shopping%20Sorocaba%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%20393%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_trezentos_barber_shop_p%C3%A1tio_cian%C3%AA_shoppi/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:57:30"}, {"id": "barber_teles_studio", "slug": "barber_teles_studio", "nome": "Barber Teles & Studio", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "25", "telefone": "(11) 96644-8779", "endereco": "Av. Pres. Vargas, 80 - Alto Maron, Vitória da Conquista - BA, 45005-036", "score_lead": "⚡ PRATA (Rede Social/App Terceiro)", "score_tag": "prata", "status_lead": "REDE_SOCIAL_OU_APP", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barber_teles_studio/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barber_teles_studio/index.html", "pitch_wa_url": "https://wa.me/5511966448779?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABarber%20Teles%20%26%20Studio%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%2025%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barber_teles_studio/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:35:53"}, {"id": "barbearia_nobell", "slug": "barbearia_nobell", "nome": "BARBEARIA NOBELL", "categoria": "Cabeleireiro", "nota": "5,0", "total_avaliacoes": "6", "telefone": "(77) 99844-0312", "endereco": "Tv. Otávio Santos, 59 - Recreio, Vitória da Conquista - BA, 45020-760", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_nobell/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_nobell/index.html", "pitch_wa_url": "https://wa.me/5577998440312?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABARBEARIA%20NOBELL%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%206%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_nobell/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:35:55"}, {"id": "barbearia_dias", "slug": "barbearia_dias", "nome": "Barbearia Dias", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "9", "telefone": "(77) 99982-9981", "endereco": "R. 13 de Maio, 57b - Centro, Vitória da Conquista - BA, 45000-795", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_dias/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_dias/index.html", "pitch_wa_url": "https://wa.me/5577999829981?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABarbearia%20Dias%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%209%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_dias/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:35:57"}, {"id": "tiago_barbearia", "slug": "tiago_barbearia", "nome": "Tiago Barbearia", "categoria": "Barbearia", "nota": "4,9", "total_avaliacoes": "137", "telefone": "(77) 98826-4254", "endereco": "R. Laudicéia Gusmão, 517 - Centro, Vitória da Conquista - BA, 45000-705", "score_lead": "⚡ PRATA (Rede Social/App Terceiro)", "score_tag": "prata", "status_lead": "REDE_SOCIAL_OU_APP", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/tiago_barbearia/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/tiago_barbearia/index.html", "pitch_wa_url": "https://wa.me/5577988264254?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ATiago%20Barbearia%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C9%20com%20mais%20de%20137%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/tiago_barbearia/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:00"}, {"id": "barbearia_brooklyn_barbershop_centro", "slug": "barbearia_brooklyn_barbershop_centro", "nome": "Barbearia Brooklyn Barbershop (Centro)", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "34", "telefone": "(77) 98122-0755", "endereco": "R. Ernesto Dantas, 57 - Centro, Vitória da Conquista - BA, 45000-535", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_brooklyn_barbershop_centro/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_brooklyn_barbershop_centro/index.html", "pitch_wa_url": "https://wa.me/5577981220755?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABarbearia%20Brooklyn%20Barbershop%20%28Centro%29%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%2034%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_brooklyn_barbershop_centro/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:01"}, {"id": "barbearia_euforia", "slug": "barbearia_euforia", "nome": "BARBEARIA EUFORIA", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "269", "telefone": "(77) 98801-5284", "endereco": "Av. Bruno Bacelar, 601 - Alto Maron, Vitória da Conquista - BA, 45005-092", "score_lead": "⚡ PRATA (Rede Social/App Terceiro)", "score_tag": "prata", "status_lead": "REDE_SOCIAL_OU_APP", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_euforia/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_euforia/index.html", "pitch_wa_url": "https://wa.me/5577988015284?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABARBEARIA%20EUFORIA%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%20269%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_euforia/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:03"}, {"id": "derivaldo_barbeiro", "slug": "derivaldo_barbeiro", "nome": "Derivaldo Barbeiro", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "1", "telefone": "(77) 99975-5734", "endereco": "Av. Rosa Cruz, 346 - Candeias, Vitória da Conquista - BA, 45020-200", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/derivaldo_barbeiro/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/derivaldo_barbeiro/index.html", "pitch_wa_url": "https://wa.me/5577999755734?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ADerivaldo%20Barbeiro%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%201%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/derivaldo_barbeiro/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:07"}, {"id": "don_juba_barbearia", "slug": "don_juba_barbearia", "nome": "Don Juba Barbearia", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "562", "telefone": "(77) 98845-9301", "endereco": "Edifício Ademar Galvão - R. Nova Zelândia, 891 - loja 01 - Candeias, Vitória da Conquista - BA, 45028-095", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/don_juba_barbearia/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/don_juba_barbearia/index.html", "pitch_wa_url": "https://wa.me/5577988459301?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ADon%20Juba%20Barbearia%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%20562%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/don_juba_barbearia/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:09"}, {"id": "barbearia_everaldo_barbiere_em_bairro_candeias_vit", "slug": "barbearia_everaldo_barbiere_em_bairro_candeias_vit", "nome": "Barbearia Everaldo Barbiere - em Bairro Candeias - Vitória da Conquista", "categoria": "Barbearia", "nota": "5,0", "total_avaliacoes": "175", "telefone": "(77) 98877-0710", "endereco": "Av. Braulino Santos, 585 - Candeias, Vitória da Conquista - BA, 45028-170", "score_lead": "⚡ PRATA (Rede Social/App Terceiro)", "score_tag": "prata", "status_lead": "REDE_SOCIAL_OU_APP", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_everaldo_barbiere_em_bairro_candeias_vit/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_everaldo_barbiere_em_bairro_candeias_vit/index.html", "pitch_wa_url": "https://wa.me/5577988770710?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABarbearia%20Everaldo%20Barbiere%20-%20em%20Bairro%20Candeias%20-%20Vit%C3%B3ria%20da%20Conquista%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%205%2C0%20com%20mais%20de%20175%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_everaldo_barbiere_em_bairro_candeias_vit/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:10"}, {"id": "barbearia_armazzem", "slug": "barbearia_armazzem", "nome": "Barbearia ArmazZem", "categoria": "Barbearia", "nota": "4,5", "total_avaliacoes": "108", "telefone": "(77) 98851-0789", "endereco": "Av. Rosa Cruz, 346 - Candeias, Vitória da Conquista - BA, 45028-045", "score_lead": "🔥 OURO (Sem Site)", "score_tag": "ouro", "status_lead": "SEM_SITE", "template": "barbearia_beleza", "template_badge": "BARBEARIA BELEZA", "demo_rel_url": "sites/barbearia_armazzem/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/barbearia_armazzem/index.html", "pitch_wa_url": "https://wa.me/5577988510789?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ABarbearia%20ArmazZem%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C5%20com%20mais%20de%20108%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/barbearia_armazzem/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 15:36:12"}, {"id": "micheluccio_pizzas_sorocaba", "slug": "micheluccio_pizzas_sorocaba", "nome": "Micheluccio Pizzas Sorocaba", "categoria": "Pizzaria", "nota": "4,6", "total_avaliacoes": "2.492", "telefone": "(15) 3232-8868", "endereco": "Av. Barão de Tatuí, 417 - Jardim Vergueiro, Sorocaba - SP, 18030-000", "score_lead": "❄️ BRONZE (Já tem site)", "score_tag": "bronze", "status_lead": "SITE_PROPRIO", "template": "gastronomia", "template_badge": "GASTRONOMIA", "demo_rel_url": "sites/micheluccio_pizzas_sorocaba/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/micheluccio_pizzas_sorocaba/index.html", "pitch_wa_url": "https://wa.me/551532328868?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2AMicheluccio%20Pizzas%20Sorocaba%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C6%20com%20mais%20de%202.492%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/micheluccio_pizzas_sorocaba/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:56:55"}, {"id": "rural_pizzeria_napoletana", "slug": "rural_pizzeria_napoletana", "nome": "Rural Pizzeria Napoletana", "categoria": "Pizzaria", "nota": "4,8", "total_avaliacoes": "1.207", "telefone": "(15) 3142-2387", "endereco": "R. Cmte. Salgado, 899 - Vila Hortência, Sorocaba - SP, 18020-264", "score_lead": "❄️ BRONZE (Já tem site)", "score_tag": "bronze", "status_lead": "SITE_PROPRIO", "template": "gastronomia", "template_badge": "GASTRONOMIA", "demo_rel_url": "sites/rural_pizzeria_napoletana/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/rural_pizzeria_napoletana/index.html", "pitch_wa_url": "https://wa.me/551531422387?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ARural%20Pizzeria%20Napoletana%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C8%20com%20mais%20de%201.207%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/rural_pizzeria_napoletana/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:56:57"}, {"id": "piomontes_pizzaria", "slug": "piomontes_pizzaria", "nome": "PIOMONTES PIZZARIA", "categoria": "Pizzaria", "nota": "4,7", "total_avaliacoes": "2.323", "telefone": "(15) 3202-8449", "endereco": "Av. Washington Luiz, 1343 - Jardim America, Sorocaba - SP, 18046-700", "score_lead": "❄️ BRONZE (Já tem site)", "score_tag": "bronze", "status_lead": "SITE_PROPRIO", "template": "gastronomia", "template_badge": "GASTRONOMIA", "demo_rel_url": "sites/piomontes_pizzaria/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/piomontes_pizzaria/index.html", "pitch_wa_url": "https://wa.me/551532028449?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2APIOMONTES%20PIZZARIA%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C7%20com%20mais%20de%202.323%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/piomontes_pizzaria/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:56:59"}, {"id": "villa_napolitana_campolim_pizzaria", "slug": "villa_napolitana_campolim_pizzaria", "nome": "Villa Napolitana Campolim - Pizzaria", "categoria": "Pizzaria", "nota": "4,9", "total_avaliacoes": "704", "telefone": "(15) 98825-9147", "endereco": "Rua Francisco Neves, 93 - Parque Campolim, Sorocaba - SP, 18047-637", "score_lead": "❄️ BRONZE (Já tem site)", "score_tag": "bronze", "status_lead": "SITE_PROPRIO", "template": "gastronomia", "template_badge": "GASTRONOMIA", "demo_rel_url": "sites/villa_napolitana_campolim_pizzaria/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/villa_napolitana_campolim_pizzaria/index.html", "pitch_wa_url": "https://wa.me/5515988259147?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2AVilla%20Napolitana%20Campolim%20-%20Pizzaria%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C9%20com%20mais%20de%20704%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/villa_napolitana_campolim_pizzaria/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:57:00"}, {"id": "pizza_prime_sorocaba", "slug": "pizza_prime_sorocaba", "nome": "Pizza Prime | Sorocaba", "categoria": "Pizzaria", "nota": "4,8", "total_avaliacoes": "207", "telefone": "(15) 3342-1700", "endereco": "Av. Gen. Carneiro, 624 - Vila Lucy, Sorocaba - SP, 18043-002", "score_lead": "❄️ BRONZE (Já tem site)", "score_tag": "bronze", "status_lead": "SITE_PROPRIO", "template": "gastronomia", "template_badge": "GASTRONOMIA", "demo_rel_url": "sites/pizza_prime_sorocaba/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/pizza_prime_sorocaba/index.html", "pitch_wa_url": "https://wa.me/551533421700?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2APizza%20Prime%20%7C%20Sorocaba%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C8%20com%20mais%20de%20207%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/pizza_prime_sorocaba/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:57:02"}, {"id": "cantinho_da_pizza_sorocaba", "slug": "cantinho_da_pizza_sorocaba", "nome": "CANTINHO DA PIZZA SOROCABA", "categoria": "Pizzaria", "nota": "4,9", "total_avaliacoes": "91", "telefone": "(15) 99147-0084", "endereco": "Av. Itavuvu, 1178 - Jardim Maria Antônia Prado, Sorocaba - SP, 18076-005", "score_lead": "⚡ PRATA (Rede Social/App Terceiro)", "score_tag": "prata", "status_lead": "REDE_SOCIAL_OU_APP", "template": "gastronomia", "template_badge": "GASTRONOMIA", "demo_rel_url": "sites/cantinho_da_pizza_sorocaba/index.html", "demo_public_url": "https://leo-luz-code.github.io/landing-pages/sites/cantinho_da_pizza_sorocaba/index.html", "pitch_wa_url": "https://wa.me/5515991470084?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Aqui%20%C3%A9%20o%20Leonardo%21%0A%0AEstava%20pesquisando%20os%20melhores%20servi%C3%A7os%20da%20nossa%20regi%C3%A3o%20e%20vi%20que%20a%20%2ACANTINHO%20DA%20PIZZA%20SOROCABA%2A%20tem%20uma%20reputa%C3%A7%C3%A3o%20excelente%20no%20Google%20Maps%20%28nota%204%2C9%20com%20mais%20de%2091%20avalia%C3%A7%C3%B5es%21%29.%0A%0ANotei%20que%20voc%C3%AAs%20ainda%20n%C3%A3o%20tinham%20um%20site%20pr%C3%B3prio%20oficial%20para%20receber%20e%20converter%20quem%20busca%20por%20voc%C3%AAs%20no%20Google%20todos%20os%20dias.%0A%0APara%20mostrar%20na%20pr%C3%A1tica%20como%20voc%C3%AAs%20podem%20se%20destacar%20ainda%20mais%2C%20montei%20uma%20pr%C3%A9via%20exclusiva%20e%20sem%20compromisso%20de%20como%20ficaria%20a%20presen%C3%A7a%20digital%20oficial%20de%20voc%C3%AAs%3A%0A%0A%F0%9F%91%89%20https%3A//leo-luz-code.github.io/landing-pages/sites/cantinho_da_pizza_sorocaba/index.html%0A%0AO%20site%20j%C3%A1%20est%C3%A1%20otimizado%20para%20celulares%2C%20com%20bot%C3%A3o%20de%20WhatsApp%20direto%20para%20a%20equipe%20de%20voc%C3%AAs%20e%20mapa%20integrado.%20Se%20voc%C3%AAs%20gostarem%20e%20fizer%20sentido%2C%20podemos%20colocar%20no%20ar%20no%20pr%C3%B3prio%20dom%C3%ADnio%20oficial%20de%20voc%C3%AAs%20esta%20semana.%20O%20que%20acharam%3F", "coletado_em": "2026-11-05 14:57:03"}]
+    </script>
+
+    <!-- MOTOR DINÂMICO DE RENDERIZAÇÃO & FILTROS -->
+    <script>
+        let allLeads = [];
+
+        // Elementos do DOM
+        const searchInput = document.getElementById('searchInput');
+        const nicheFilter = document.getElementById('nicheFilter');
+        const scoreFilter = document.getElementById('scoreFilter');
+        const clearBtn = document.getElementById('clearFiltersBtn');
+        const visibleCount = document.getElementById('visibleCount');
+        const totalCount = document.getElementById('totalCount');
+        const cardsGrid = document.getElementById('cardsGrid');
+        const emptyState = document.getElementById('emptyState');
+        const pills = document.querySelectorAll('.quick-pill');
+
+        // Carrega os dados do database.json
+        async function loadDatabase() {
+            try {
+                const res = await fetch('database.json?t=' + Date.now());
+                if (!res.ok) throw new Error('Falha HTTP');
+                allLeads = await res.json();
+            } catch (e) {
+                console.warn('Carregando dados a partir do fallback embutido:', e);
+                const raw = document.getElementById('databaseFallback').textContent;
+                allLeads = JSON.parse(raw);
+            }
+
+            updateStats(allLeads);
+            renderCards(allLeads);
+        }
+
+        // Atualiza contadores do cabeçalho
+        function updateStats(data) {
+            const total = data.length;
+            const ouro = data.filter(x => x.score_tag === 'ouro').length;
+            const prata = data.filter(x => x.score_tag === 'prata').length;
+            const bronze = data.filter(x => x.score_tag === 'bronze').length;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statOuro').innerText = ouro;
+            document.getElementById('statPrata').innerText = prata;
+            document.getElementById('statBronze').innerText = bronze;
+            totalCount.innerText = total;
+        }
+
+        // Renderiza os cards usando um laço 'for' dinâmico
+        function renderCards(items) {
+            cardsGrid.innerHTML = '';
+            visibleCount.innerText = items.length;
+
+            if (items.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            // Laço de repetição dinâmico gerando cada card
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                
+                let scoreBadgeClass = "bg-blue-500/10 text-blue-300 border-blue-500/20";
+                if (item.score_tag === "ouro") {
+                    scoreBadgeClass = "bg-amber-500/10 text-amber-300 border-amber-500/20";
+                } else if (item.score_tag === "prata") {
+                    scoreBadgeClass = "bg-slate-800 text-slate-300 border-slate-700";
+                }
+
+                const card = document.createElement('div');
+                card.className = "lead-card bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-200 hover:-translate-y-1";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-indigo-400 border border-indigo-500/20">${item.template_badge}</span>
+                            <span class="text-xs font-semibold text-amber-400 flex items-center gap-1">★ ${item.nota} (${item.total_avaliacoes})</span>
+                        </div>
+                        <h2 class="font-bold text-lg text-white mb-2 line-clamp-1" title="${item.nome}">${item.nome}</h2>
+                        <div class="mb-4">
+                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg border ${scoreBadgeClass}">
+                                ${item.score_lead}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300 flex items-center gap-2 mb-2">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                            <span>${item.telefone || 'Sem telefone'}</span>
+                        </p>
+                        <p class="text-xs text-slate-400 flex items-start gap-2 mb-6 line-clamp-2" title="${item.endereco || ''}">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5"></i>
+                            <span>${item.endereco || 'Localização no Google Maps'}</span>
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-800">
+                        <a href="${item.demo_rel_url}" target="_blank" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-950/50">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            <span>Ver Landing Page Pronta</span>
+                        </a>
+
+                        <a href="${item.pitch_wa_url}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950/50">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            <span>Enviar Pitch no WhatsApp</span>
+                        </a>
+                    </div>
+                `;
+                cardsGrid.appendChild(card);
+            }
+
+            // Re-renderiza os ícones do Lucide
+            lucide.createIcons();
+        }
+
+        // Filtragem dos dados
+        function filterLeads() {
+            const query = searchInput.value.toLowerCase().trim();
+            const selectedNiche = nicheFilter.value;
+            const selectedScore = scoreFilter.value;
+
+            const filtered = allLeads.filter(item => {
+                const name = (item.nome || '').toLowerCase();
+                const address = (item.endereco || '').toLowerCase();
+                const niche = item.template || '';
+                const score = item.score_tag || '';
+
+                const matchesQuery = !query || name.includes(query) || address.includes(query);
+                const matchesNiche = selectedNiche === 'todos' || niche === selectedNiche;
+                const matchesScore = selectedScore === 'todos' || score === selectedScore;
+
+                return matchesQuery && matchesNiche && matchesScore;
+            });
+
+            renderCards(filtered);
+        }
+
+        function resetFilters() {
+            searchInput.value = '';
+            nicheFilter.value = 'todos';
+            scoreFilter.value = 'todos';
+            filterLeads();
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', filterLeads);
+        nicheFilter.addEventListener('change', filterLeads);
+        scoreFilter.addEventListener('change', filterLeads);
+        clearBtn.addEventListener('click', resetFilters);
+
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const fType = pill.getAttribute('data-filter-type');
+                const fVal = pill.getAttribute('data-filter-val');
+
+                if (fType === 'all') {
+                    resetFilters();
+                } else if (fType === 'score') {
+                    scoreFilter.value = fVal;
+                    filterLeads();
+                } else if (fType === 'niche') {
+                    nicheFilter.value = fVal;
+                    filterLeads();
+                }
+            });
+        });
+
+        // Inicializa ao carregar a página
+        document.addEventListener('DOMContentLoaded', loadDatabase);
+    </script>
+</body>
+</html>
+    

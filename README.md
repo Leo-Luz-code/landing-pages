@@ -80,10 +80,11 @@ Você verá o **Painel Central** com:
 
 ### 🌐 Como Enviar a Prévia para o Dono do Estabelecimento
 
-Para que o dono veja o site no celular dele quando você mandar o link no WhatsApp, você pode subir a pasta `sites_gerados` para a internet gratuitamente:
+Para que o dono veja o site no celular dele quando você mandar o link no WhatsApp, você pode subir a pasta `sites` para a internet gratuitamente:
 
-1. **Vercel / Netlify / Cloudflare Pages (Grátis):**
-   - Arraste a pasta `sites_gerados` para o dashboard do Netlify Drop (ou Vercel).
-   - Você ganha um link instantâneo tipo: `https://seusite-demo.netlify.app/barbearia_trezentos/`
-2. **Ou via subdomínio próprio:**
-   - Ex: `preview.suaagencia.com.br/barbearia-trezentos`
+1. **GitHub Pages (Ativo e Recomendado):**
+   - Acesse: `https://leo-luz-code.github.io/landing-pages/`
+   - Cada site fica em: `https://leo-luz-code.github.io/landing-pages/sites/[nome-do-negocio]/index.html`
+
+2. **Vercel / Netlify / Cloudflare Pages (Grátis):**
+   - Arraste a pasta `sites` para o dashboard do Netlify Drop (ou Vercel).

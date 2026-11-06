@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Gerador Automático de Landing Pages para Leads do Google Maps
-Renderiza templates profissionais baseados nos dados coletados pelo scraper.
+Renderiza templates profissionais e alimenta o banco de dados 'database.json'.
+O painel 'index.html' carrega os dados dinamicamente via JavaScript com laço de repetição.
 """
 
 import os
@@ -14,7 +15,7 @@ from jinja2 import Environment, FileSystemLoader
 
 ROOT_DIR = Path(__file__).parent
 TEMPLATES_DIR = ROOT_DIR / "templates"
-OUTPUT_DIR = ROOT_DIR / "sites_gerados"
+OUTPUT_DIR = ROOT_DIR / "sites"
 GITHUB_PAGES_BASE = "https://leo-luz-code.github.io/landing-pages"
 
 CATEGORY_MAPPING = {
@@ -51,7 +52,6 @@ def detect_template(item: dict) -> str:
     for template_name in priority_order:
         keywords = CATEGORY_MAPPING[template_name]
         for kw in keywords:
-            # Usa regex para garantir match de palavra ou início exato, evitando 'bar' em 'barbearia'
             pattern = rf"\b{re.escape(kw)}"
             if re.search(pattern, text):
                 return template_name
@@ -82,7 +82,7 @@ def create_pitch_message(item: dict, demo_url: str) -> str:
     return msg
 
 def generate_sites(json_file_path: str, template_override: str = None):
-    """Lê o JSON de leads e gera os sites estáticos completos."""
+    """Lê o JSON de leads, gera os sites estáticos e salva o banco de dados 'database.json'."""
     with open(json_file_path, "r", encoding="utf-8") as f:
         leads = json.load(f)
         
@@ -103,14 +103,13 @@ def generate_sites(json_file_path: str, template_override: str = None):
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     
-    generated_list = []
+    database_records = []
     
     print(f"\n🚀 Gerando Landing Pages a partir de: {json_file_path}")
     print(f"Total de estabelecimentos únicos: {len(leads)}")
     print("=" * 60)
     
     for idx, item in enumerate(leads, 1):
-        # Determina o template
         tmpl_name = template_override if template_override else detect_template(item)
         tmpl_file = f"{tmpl_name}.html"
         
@@ -121,51 +120,86 @@ def generate_sites(json_file_path: str, template_override: str = None):
             template = env.get_template("servicos_locais.html")
             tmpl_name = "servicos_locais"
             
-        # Nome da pasta
         slug = slugify(item.get("nome", f"lead_{idx}"))
         site_folder = OUTPUT_DIR / slug
         site_folder.mkdir(parents=True, exist_ok=True)
         
-        # Renderiza a página
+        # Renderiza a página da empresa
         html_content = template.render(**item)
         index_file = site_folder / "index.html"
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(html_content)
             
-        demo_rel_url = f"sites_gerados/{slug}/index.html"
-        demo_public_url = f"{GITHUB_PAGES_BASE}/sites_gerados/{slug}/index.html"
+        # Padrão de URLs atualizado para /sites/{slug}/index.html
+        demo_rel_url = f"sites/{slug}/index.html"
+        demo_public_url = f"{GITHUB_PAGES_BASE}/sites/{slug}/index.html"
         pitch_msg = create_pitch_message(item, demo_public_url)
         
-        generated_list.append({
-            **item,
+        # Classificação de Score
+        status_lead = item.get("status_lead", "")
+        score_lead = item.get("score_lead", "LEAD")
+        if "SEM_SITE" in status_lead or "ouro" in score_lead.lower():
+            score_tag = "ouro"
+        elif "REDE_SOCIAL" in status_lead or "prata" in score_lead.lower():
+            score_tag = "prata"
+        else:
+            score_tag = "bronze"
+
+        wa_link = item.get("whatsapp_link", "")
+        encoded_pitch = urllib.parse.quote(pitch_msg)
+        pitch_wa_url = f"{wa_link}?text={encoded_pitch}" if wa_link else "#"
+
+        record = {
+            "id": slug,
             "slug": slug,
-            "template_usado": tmpl_name,
-            "local_path": str(index_file),
+            "nome": item.get("nome", ""),
+            "categoria": item.get("categoria", ""),
+            "nota": item.get("nota", "5.0"),
+            "total_avaliacoes": item.get("total_avaliacoes", "+50"),
+            "telefone": item.get("telefone", "Sem telefone"),
+            "endereco": item.get("endereco", ""),
+            "score_lead": score_lead,
+            "score_tag": score_tag,
+            "status_lead": status_lead,
+            "template": tmpl_name,
+            "template_badge": tmpl_name.replace("_", " ").upper(),
             "demo_rel_url": demo_rel_url,
-            "pitch_msg": pitch_msg
-        })
+            "demo_public_url": demo_public_url,
+            "pitch_wa_url": pitch_wa_url,
+            "coletado_em": item.get("coletado_em", "")
+        }
+        database_records.append(record)
         
         print(f"[{idx}/{len(leads)}] ✅ {item['nome']}")
-        print(f"   Template: {tmpl_name.upper()} | Pasta: sites_gerados/{slug}/")
+        print(f"   Template: {tmpl_name.upper()} | Pasta: sites/{slug}/")
         
-    # Gera um Painel de Controle (Dashboard) para você gerenciar os sites criados!
-    generate_dashboard(generated_list)
+    # Salva o arquivo de banco de dados 'database.json' e renderiza o novo painel dinâmico
+    save_database_and_dashboard(database_records)
     
     print("\n" + "=" * 60)
     print("🎉 SUCESSO! TODAS AS LANDING PAGES FORAM GERADAS!")
     print(f"📂 Diretório dos sites: {OUTPUT_DIR}")
-    print(f"📊 Painel de Navegação: {OUTPUT_DIR}/index.html")
+    print(f"💾 Banco de Dados: {ROOT_DIR / 'database.json'}")
+    print(f"📊 Painel Dinâmico: {ROOT_DIR / 'index.html'}")
     print("=" * 60)
-    return generated_list
+    return database_records
 
-def generate_dashboard(generated_list: list):
-    """Gera um painel com listagem visual, busca e filtros por nicho, nome e nível do lead (ouro, prata, bronze)."""
-    
-    # Contadores iniciais
-    total_leads = len(generated_list)
-    total_ouro = sum(1 for x in generated_list if "SEM_SITE" in x.get("status_lead", "") or "ouro" in x.get("score_lead", "").lower())
-    total_prata = sum(1 for x in generated_list if "REDE_SOCIAL" in x.get("status_lead", "") or "prata" in x.get("score_lead", "").lower())
-    total_bronze = sum(1 for x in generated_list if "SITE_PROPRIO" in x.get("status_lead", "") or "bronze" in x.get("score_lead", "").lower())
+def save_database_and_dashboard(database_records: list):
+    """
+    1. Salva o banco de dados 'database.json'.
+    2. Gera o painel 'index.html' que puxa os dados do JSON e renderiza os cards com um loop for em JavaScript.
+    """
+    # 1. Salva database.json na raiz e na pasta sites/
+    db_path_root = ROOT_DIR / "database.json"
+    with open(db_path_root, "w", encoding="utf-8") as f:
+        json.dump(database_records, f, ensure_ascii=False, indent=2)
+        
+    db_path_sites = OUTPUT_DIR / "database.json"
+    with open(db_path_sites, "w", encoding="utf-8") as f:
+        json.dump(database_records, f, ensure_ascii=False, indent=2)
+
+    # 2. Cria o index.html dinâmico
+    json_embedded = json.dumps(database_records, ensure_ascii=False)
 
     dashboard_html = f"""<!DOCTYPE html>
 <html lang="pt-BR">
@@ -173,16 +207,11 @@ def generate_dashboard(generated_list: list):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Landing Pages Geradas | Prospecção Ativa</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        .pill-active {{
-            background-color: rgb(79 70 229);
-            color: white;
-            border-color: transparent;
-        }}
-    </style>
 </head>
 <body class="bg-[#0B1120] text-slate-100 font-sans p-4 sm:p-8 md:p-12 min-h-screen">
     <div class="max-w-7xl mx-auto">
@@ -191,24 +220,25 @@ def generate_dashboard(generated_list: list):
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider mb-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Esteira Ativa de Vendas
+                    Banco de Dados Ativo • JSON
                 </div>
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Painel de Landing Pages Geradas</h1>
-                <p class="text-slate-400 text-sm mt-1">Sites prontos para demonstração instantânea e prospecção direta no WhatsApp.</p>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Painel de Landing Pages</h1>
+                <p class="text-slate-400 text-sm mt-1">Dados carregados dinamicamente via <code class="text-indigo-400 font-mono">database.json</code> com renderização reativa.</p>
             </div>
             
-            <div class="flex flex-wrap items-center gap-2">
+            <!-- CONTADORES GERAIS -->
+            <div class="flex flex-wrap items-center gap-2" id="statsContainer">
                 <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-xs sm:text-sm">
-                    <span class="text-slate-400">Total:</span> <strong class="text-white font-bold">{total_leads}</strong>
+                    <span class="text-slate-400">Total:</span> <strong id="statTotal" class="text-white font-bold">0</strong>
                 </div>
                 <div class="bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-amber-300 font-semibold">
-                    🔥 Ouro: <strong>{total_ouro}</strong>
+                    🔥 Ouro: <strong id="statOuro">0</strong>
                 </div>
                 <div class="bg-slate-500/10 border border-slate-700 px-3 py-2 rounded-xl text-xs sm:text-sm text-slate-300">
-                    ⚡ Prata: <strong>{total_prata}</strong>
+                    ⚡ Prata: <strong id="statPrata">0</strong>
                 </div>
                 <div class="bg-blue-500/10 border border-blue-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-blue-300">
-                    ❄️ Bronze: <strong>{total_bronze}</strong>
+                    ❄️ Bronze: <strong id="statBronze">0</strong>
                 </div>
             </div>
         </header>
@@ -216,7 +246,7 @@ def generate_dashboard(generated_list: list):
         <!-- BARRA DE FILTROS & BUSCA -->
         <div class="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl p-5 mb-8 shadow-2xl">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <!-- 1. Campo de Busca por Nome / Cidade -->
+                <!-- 1. Campo de Busca por Nome / Bairro / Cidade -->
                 <div class="md:col-span-5 relative">
                     <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                     <input type="text" id="searchInput" placeholder="Buscar por nome do estabelecimento ou bairro..." class="w-full bg-slate-950/80 border border-slate-700/80 focus:border-indigo-500 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition">
@@ -260,84 +290,13 @@ def generate_dashboard(generated_list: list):
                 <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="niche" data-filter-val="gastronomia">🍕 Gastronomia</button>
                 
                 <div class="ml-auto text-xs text-slate-400">
-                    Mostrando <span id="visibleCount" class="font-bold text-white text-sm">{total_leads}</span> de <span id="totalCount">{total_leads}</span> sites
+                    Mostrando <span id="visibleCount" class="font-bold text-white text-sm">0</span> de <span id="totalCount">0</span> sites
                 </div>
             </div>
         </div>
 
-        <!-- GRID DE CARDS DOS SITES -->
-        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    """
-    
-    for item in generated_list:
-        slug = item["slug"]
-        nome = item["nome"]
-        nota = item.get("nota", "5.0")
-        av = item.get("total_avaliacoes", "+50")
-        score = item.get("score_lead", "LEAD")
-        status_lead = item.get("status_lead", "")
-        tel = item.get("telefone", "Sem telefone")
-        endereco = item.get("endereco", "")
-        tmpl = item.get("template_usado", "geral")
-        tmpl_badge = tmpl.replace("_", " ").upper()
-        wa_link = item.get("whatsapp_link", "")
-        encoded_pitch = urllib.parse.quote(item["pitch_msg"])
-        pitch_wa_url = f"{wa_link}?text={encoded_pitch}" if wa_link else "#"
-
-        # Define tag normalizada de score para filtro
-        if "SEM_SITE" in status_lead or "ouro" in score.lower():
-            score_filter_tag = "ouro"
-            score_badge_class = "bg-amber-500/10 text-amber-300 border-amber-500/20"
-        elif "REDE_SOCIAL" in status_lead or "prata" in score.lower():
-            score_filter_tag = "prata"
-            score_badge_class = "bg-slate-800 text-slate-300 border-slate-700"
-        else:
-            score_filter_tag = "bronze"
-            score_badge_class = "bg-blue-500/10 text-blue-300 border-blue-500/20"
-
-        dashboard_html += f"""
-        <div class="lead-card bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-200 hover:-translate-y-1"
-             data-name="{nome.lower()}"
-             data-niche="{tmpl}"
-             data-score="{score_filter_tag}"
-             data-city="{endereco.lower()}">
-            <div>
-                <div class="flex items-center justify-between gap-2 mb-3">
-                    <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-indigo-400 border border-indigo-500/20">{tmpl_badge}</span>
-                    <span class="text-xs font-semibold text-amber-400 flex items-center gap-1">★ {nota} ({av})</span>
-                </div>
-                <h2 class="font-bold text-lg text-white mb-2 line-clamp-1" title="{nome}">{nome}</h2>
-                <div class="mb-4">
-                    <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg border {score_badge_class}">
-                        {score}
-                    </span>
-                </div>
-                <p class="text-xs text-slate-300 flex items-center gap-2 mb-2">
-                    <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
-                    <span>{tel}</span>
-                </p>
-                <p class="text-xs text-slate-400 flex items-start gap-2 mb-6 line-clamp-2" title="{endereco}">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5"></i>
-                    <span>{endereco if endereco else 'Localização no Google Maps'}</span>
-                </p>
-            </div>
-
-            <div class="space-y-2 pt-4 border-t border-slate-800">
-                <a href="{item['demo_rel_url']}" target="_blank" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-950/50">
-                    <i data-lucide="external-link" class="w-4 h-4"></i>
-                    <span>Ver Landing Page Pronta</span>
-                </a>
-
-                <a href="{pitch_wa_url}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950/50">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                    <span>Enviar Pitch no WhatsApp</span>
-                </a>
-            </div>
-        </div>
-        """
-        
-    dashboard_html += """
-        </div>
+        <!-- GRID ONDE OS CARDS SERÃO GERADOS DINAMICAMENTE PELO LOOP JAVASCRIPT -->
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
         <!-- MENSAGEM QUANDO NENHUM RESULTADO FOR ENCONTRADO -->
         <div id="emptyState" class="hidden py-16 text-center bg-slate-900/50 border border-slate-800 rounded-3xl mt-6">
@@ -352,95 +311,184 @@ def generate_dashboard(generated_list: list):
         </div>
     </div>
 
-    <!-- JAVASCRIPT DE FILTRAGEM INSTANTÂNEA -->
-    <script>
-        lucide.createIcons();
+    <!-- DADOS DE FALLBACK (Garante funcionamento mesmo em navegadores locais offline sem CORS) -->
+    <script id="databaseFallback" type="application/json">
+{json_embedded}
+    </script>
 
+    <!-- MOTOR DINÂMICO DE RENDERIZAÇÃO & FILTROS -->
+    <script>
+        let allLeads = [];
+
+        // Elementos do DOM
         const searchInput = document.getElementById('searchInput');
         const nicheFilter = document.getElementById('nicheFilter');
         const scoreFilter = document.getElementById('scoreFilter');
         const clearBtn = document.getElementById('clearFiltersBtn');
         const visibleCount = document.getElementById('visibleCount');
+        const totalCount = document.getElementById('totalCount');
         const cardsGrid = document.getElementById('cardsGrid');
         const emptyState = document.getElementById('emptyState');
-        const cards = Array.from(document.querySelectorAll('.lead-card'));
         const pills = document.querySelectorAll('.quick-pill');
 
-        function filterLeads() {
+        // Carrega os dados do database.json
+        async function loadDatabase() {{
+            try {{
+                const res = await fetch('database.json?t=' + Date.now());
+                if (!res.ok) throw new Error('Falha HTTP');
+                allLeads = await res.json();
+            }} catch (e) {{
+                console.warn('Carregando dados a partir do fallback embutido:', e);
+                const raw = document.getElementById('databaseFallback').textContent;
+                allLeads = JSON.parse(raw);
+            }}
+
+            updateStats(allLeads);
+            renderCards(allLeads);
+        }}
+
+        // Atualiza contadores do cabeçalho
+        function updateStats(data) {{
+            const total = data.length;
+            const ouro = data.filter(x => x.score_tag === 'ouro').length;
+            const prata = data.filter(x => x.score_tag === 'prata').length;
+            const bronze = data.filter(x => x.score_tag === 'bronze').length;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statOuro').innerText = ouro;
+            document.getElementById('statPrata').innerText = prata;
+            document.getElementById('statBronze').innerText = bronze;
+            totalCount.innerText = total;
+        }}
+
+        // Renderiza os cards usando um laço 'for' dinâmico
+        function renderCards(items) {{
+            cardsGrid.innerHTML = '';
+            visibleCount.innerText = items.length;
+
+            if (items.length === 0) {{
+                emptyState.classList.remove('hidden');
+                return;
+            }}
+            emptyState.classList.add('hidden');
+
+            // Laço de repetição dinâmico gerando cada card
+            for (let i = 0; i < items.length; i++) {{
+                const item = items[i];
+                
+                let scoreBadgeClass = "bg-blue-500/10 text-blue-300 border-blue-500/20";
+                if (item.score_tag === "ouro") {{
+                    scoreBadgeClass = "bg-amber-500/10 text-amber-300 border-amber-500/20";
+                }} else if (item.score_tag === "prata") {{
+                    scoreBadgeClass = "bg-slate-800 text-slate-300 border-slate-700";
+                }}
+
+                const card = document.createElement('div');
+                card.className = "lead-card bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-200 hover:-translate-y-1";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-indigo-400 border border-indigo-500/20">${{item.template_badge}}</span>
+                            <span class="text-xs font-semibold text-amber-400 flex items-center gap-1">★ ${{item.nota}} (${{item.total_avaliacoes}})</span>
+                        </div>
+                        <h2 class="font-bold text-lg text-white mb-2 line-clamp-1" title="${{item.nome}}">${{item.nome}}</h2>
+                        <div class="mb-4">
+                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg border ${{scoreBadgeClass}}">
+                                ${{item.score_lead}}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300 flex items-center gap-2 mb-2">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                            <span>${{item.telefone || 'Sem telefone'}}</span>
+                        </p>
+                        <p class="text-xs text-slate-400 flex items-start gap-2 mb-6 line-clamp-2" title="${{item.endereco || ''}}">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5"></i>
+                            <span>${{item.endereco || 'Localização no Google Maps'}}</span>
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-800">
+                        <a href="${{item.demo_rel_url}}" target="_blank" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-950/50">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            <span>Ver Landing Page Pronta</span>
+                        </a>
+
+                        <a href="${{item.pitch_wa_url}}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950/50">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            <span>Enviar Pitch no WhatsApp</span>
+                        </a>
+                    </div>
+                `;
+                cardsGrid.appendChild(card);
+            }}
+
+            // Re-renderiza os ícones do Lucide
+            lucide.createIcons();
+        }}
+
+        // Filtragem dos dados
+        function filterLeads() {{
             const query = searchInput.value.toLowerCase().trim();
             const selectedNiche = nicheFilter.value;
             const selectedScore = scoreFilter.value;
 
-            let matches = 0;
+            const filtered = allLeads.filter(item => {{
+                const name = (item.nome || '').toLowerCase();
+                const address = (item.endereco || '').toLowerCase();
+                const niche = item.template || '';
+                const score = item.score_tag || '';
 
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name') || '';
-                const city = card.getAttribute('data-city') || '';
-                const niche = card.getAttribute('data-niche') || '';
-                const score = card.getAttribute('data-score') || '';
-
-                const matchesQuery = !query || name.includes(query) || city.includes(query);
+                const matchesQuery = !query || name.includes(query) || address.includes(query);
                 const matchesNiche = selectedNiche === 'todos' || niche === selectedNiche;
                 const matchesScore = selectedScore === 'todos' || score === selectedScore;
 
-                if (matchesQuery && matchesNiche && matchesScore) {
-                    card.classList.remove('hidden');
-                    matches++;
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
+                return matchesQuery && matchesNiche && matchesScore;
+            }});
 
-            visibleCount.innerText = matches;
+            renderCards(filtered);
+        }}
 
-            if (matches === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-            }
-        }
-
-        function resetFilters() {
+        function resetFilters() {{
             searchInput.value = '';
             nicheFilter.value = 'todos';
             scoreFilter.value = 'todos';
             filterLeads();
-        }
+        }}
 
-        // Listeners para os inputs
+        // Event Listeners
         searchInput.addEventListener('input', filterLeads);
         nicheFilter.addEventListener('change', filterLeads);
         scoreFilter.addEventListener('change', filterLeads);
         clearBtn.addEventListener('click', resetFilters);
 
-        // Listeners para os botões de atalho (Pills)
-        pills.forEach(pill => {
-            pill.addEventListener('click', () => {
+        pills.forEach(pill => {{
+            pill.addEventListener('click', () => {{
                 const fType = pill.getAttribute('data-filter-type');
                 const fVal = pill.getAttribute('data-filter-val');
 
-                if (fType === 'all') {
+                if (fType === 'all') {{
                     resetFilters();
-                } else if (fType === 'score') {
+                }} else if (fType === 'score') {{
                     scoreFilter.value = fVal;
                     filterLeads();
-                } else if (fType === 'niche') {
+                }} else if (fType === 'niche') {{
                     nicheFilter.value = fVal;
                     filterLeads();
-                }
-            });
-        });
+                }}
+            }});
+        }});
+
+        // Inicializa ao carregar a página
+        document.addEventListener('DOMContentLoaded', loadDatabase);
     </script>
 </body>
 </html>
     """
     
-    # Salva na raiz do projeto para o GitHub Pages
-    root_index = ROOT_DIR / "index.html"
-    with open(root_index, "w", encoding="utf-8") as f:
+    # Salva na raiz e dentro da pasta sites/
+    with open(ROOT_DIR / "index.html", "w", encoding="utf-8") as f:
         f.write(dashboard_html)
         
-    # Salva também uma cópia em sites_gerados/ para retrocompatibilidade
     with open(OUTPUT_DIR / "index.html", "w", encoding="utf-8") as f:
         f.write(dashboard_html)
 
@@ -455,7 +503,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.todos:
-        json_files = glob.glob("dados_leads/*.json")
+        json_files = [f for f in glob.glob("dados_leads/*.json") if "consolidado" not in f]
         if not json_files:
             print("❌ Nenhum arquivo JSON encontrado em dados_leads/.")
             exit(1)
@@ -466,7 +514,6 @@ if __name__ == "__main__":
                     todos_leads.extend(json.load(f))
             except Exception as e:
                 print(f"Aviso ao ler {jf}: {e}")
-        # Salva merge temporário e gera
         merged_path = "dados_leads/leads_consolidados.json"
         with open(merged_path, "w", encoding="utf-8") as f:
             json.dump(todos_leads, f, ensure_ascii=False, indent=2)
@@ -475,7 +522,6 @@ if __name__ == "__main__":
         target_file = args.arquivo_json
         if not target_file:
             json_files = sorted(glob.glob("dados_leads/*.json"), key=os.path.getmtime, reverse=True)
-            # Ignora consolidado se houver
             json_files = [f for f in json_files if "consolidado" not in f]
             if json_files:
                 target_file = json_files[0]
