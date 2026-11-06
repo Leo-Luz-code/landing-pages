@@ -20,7 +20,7 @@
                     CRM & Prospecção Ativa
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Painel de Landing Pages</h1>
-                <p class="text-slate-400 text-sm mt-1">Gerencie seus leads, envie mensagens e controle quem já foi abordado para evitar mensagens duplicadas.</p>
+                <p class="text-slate-400 text-sm mt-1">Gerencie seus leads, envie mensagens pelo WhatsApp e acompanhe quem já recebeu abordagem.</p>
             </div>
             
             <!-- CONTADORES GERAIS -->
@@ -28,11 +28,11 @@
                 <div class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl text-xs sm:text-sm">
                     <span class="text-slate-400">Total:</span> <strong id="statTotal" class="text-white font-bold">0</strong>
                 </div>
-                <div class="bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-amber-300 font-semibold">
-                    ⏳ Pendentes: <strong id="statPendente">0</strong>
+                <div class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl text-xs sm:text-sm">
+                    <span class="text-slate-400">Ainda não mandei:</span> <strong id="statNaoEnviado" class="text-slate-200 font-bold">0</strong>
                 </div>
                 <div class="bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl text-xs sm:text-sm text-emerald-300 font-semibold">
-                    ✅ Abordados: <strong id="statAbordado">0</strong>
+                    <i data-lucide="check-check" class="w-3.5 h-3.5 inline mr-1"></i>Já mandei mensagem: <strong id="statAbordado">0</strong>
                 </div>
                 <div class="bg-slate-800/50 border border-slate-700/80 px-3 py-2 rounded-xl text-xs sm:text-sm text-amber-200">
                     🔥 Ouro: <strong id="statOuro">0</strong>
@@ -49,12 +49,12 @@
                     <input type="text" id="searchInput" placeholder="Buscar por nome do estabelecimento ou bairro..." class="w-full bg-slate-950/80 border border-slate-700/80 focus:border-indigo-500 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition">
                 </div>
 
-                <!-- 2. Filtro por Status de Contato (CRM) -->
+                <!-- 2. Filtro por Status de Contato -->
                 <div class="md:col-span-3">
                     <select id="contactFilter" class="w-full bg-slate-950/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition cursor-pointer font-medium">
-                        <option value="todos">Todos os Contatos</option>
-                        <option value="pendente">⏳ Apenas Pendentes (Não abordados)</option>
-                        <option value="enviado">✅ Apenas Já Abordados</option>
+                        <option value="todos">Todos os Estabelecimentos</option>
+                        <option value="nao_enviado">Apenas os que AINDA NÃO mandei mensagem</option>
+                        <option value="enviado">Apenas os que JÁ MANDEI mensagem</option>
                     </select>
                 </div>
 
@@ -91,10 +91,15 @@
             <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-800/80 text-xs">
                 <span class="text-slate-400 font-semibold mr-1">Atalhos rápidos:</span>
                 <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="all">Todos</button>
-                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 transition font-bold" data-filter-type="contact" data-filter-val="pendente">⏳ Apenas Pendentes</button>
-                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/20 transition font-bold" data-filter-type="contact" data-filter-val="enviado">✅ Já Abordados</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="contact" data-filter-val="nao_enviado">Ainda não mandei</button>
+                <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/20 transition font-bold" data-filter-type="contact" data-filter-val="enviado">Já mandei mensagem</button>
                 <button type="button" class="quick-pill px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-filter-type="score" data-filter-val="ouro">🔥 Ouro</button>
                 
+                <button type="button" onclick="resetAllContactHistory()" title="Limpar marcações de mensagens enviadas" class="ml-2 px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-slate-700/60 hover:border-rose-500/30 transition text-xs flex items-center gap-1.5">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Zerar status de envio</span>
+                </button>
+
                 <div class="ml-auto text-xs text-slate-400">
                     Mostrando <span id="visibleCount" class="font-bold text-white text-sm">0</span> de <span id="totalCount">0</span> sites
                 </div>
@@ -199,6 +204,15 @@
             window.open(waUrl, '_blank');
         }
 
+        // Zera todo o histórico de contatos salvos no navegador
+        function resetAllContactHistory() {
+            if (confirm('Deseja realmente zerar todos os status e definir todos os estabelecimentos como "Ainda não mandei"?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                updateStats(allLeads);
+                filterLeads();
+            }
+        }
+
         // Carrega dados
         async function loadDatabase() {
             try {
@@ -225,11 +239,11 @@
             data.forEach(x => {
                 if (history[x.id]) abordados++;
             });
-            const pendentes = total - abordados;
+            const naoEnviados = total - abordados;
 
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statOuro').innerText = ouro;
-            document.getElementById('statPendente').innerText = pendentes;
+            document.getElementById('statNaoEnviado').innerText = naoEnviados;
             document.getElementById('statAbordado').innerText = abordados;
             totalCount.innerText = total;
         }
@@ -259,7 +273,8 @@
                     scoreBadgeClass = "bg-slate-800 text-slate-300 border-slate-700";
                 }
 
-                // Badge de CRM (Pendente vs Já Abordado)
+                // Status de Contato: limpo por padrão (nenhum badge de pendente)
+                // Só ganha badge verde quando a mensagem for de fato enviada
                 let crmBadgeHtml = '';
                 let cardBorderClass = 'border-slate-800 hover:border-slate-700';
 
@@ -268,18 +283,11 @@
                     crmBadgeHtml = `
                         <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">
                             <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-                            <span>Abordado em ${contactInfo.date || ''} (${contactInfo.time || ''})</span>
-                            <button onclick="toggleContactStatus('${item.id}', event)" title="Desmarcar status" class="ml-1 text-slate-400 hover:text-white">
+                            <span>Mensagem enviada (${contactInfo.date || ''} às ${contactInfo.time || ''})</span>
+                            <button onclick="toggleContactStatus('${item.id}', event)" title="Desmarcar / Resetar status" class="ml-1 text-slate-400 hover:text-white">
                                 <i data-lucide="x" class="w-3 h-3"></i>
                             </button>
                         </div>
-                    `;
-                } else {
-                    crmBadgeHtml = `
-                        <button onclick="toggleContactStatus('${item.id}', event)" title="Clique para marcar como já enviado" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 text-xs font-semibold transition">
-                            <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
-                            <span>⏳ Pendente</span>
-                        </button>
                     `;
                 }
 
@@ -351,7 +359,7 @@
                 const matchesScore = selectedScore === 'todos' || score === selectedScore;
                 
                 let matchesContact = true;
-                if (selectedContact === 'pendente') {
+                if (selectedContact === 'nao_enviado') {
                     matchesContact = !isContacted;
                 } else if (selectedContact === 'enviado') {
                     matchesContact = isContacted;
